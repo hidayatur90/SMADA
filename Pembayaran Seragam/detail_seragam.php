@@ -8,14 +8,6 @@ if (!isset($_SESSION['username'])) {
     header("Location: index.php");
 }
 
-$sql = "SELECT * FROM detail_seragam";
-$result = $conn->query($sql); 
-
-$datas = array();
-while ($row = $result->fetch_assoc()){
-    $datas[] = $row;
-}
-
 ?>
  
 <!DOCTYPE html>
@@ -33,65 +25,83 @@ while ($row = $result->fetch_assoc()){
         <form action="" method="POST">
             <a href="logout.php" class="btn btn-danger">Logout</a>
         </form>
-        <div class="input-group my-3 col-12 col-xxl-3 col-xl-3 col-lg-3 col-md-4 col-sm-10">
-            <input type="text" class="form-control ms-3" placeholder="Cari NISN atau Nama" id="search">
-        </div>
-
+        <form action="detail_seragam.php" method="GET">
+            <div class="input-group my-3 col-12 col-xxl-3 col-xl-3 col-lg-3 col-md-4 col-sm-10">
+                <input type="text" name="cari" class="form-control ms-3" placeholder="Cari NISN atau Nama">
+                <input class="btn btn-primary" type="submit" value="Cari">
+            </div>
+        </form>
+        <?php 
+            if(isset($_GET['cari'])){
+                $cari = $_GET['cari'];
+            }
+        ?>
         <table class="table table-light table-bordered text-center">
             <thead>
                 <tr>
                 <th scope="col">No.</th>
                 <th scope="col">NISN</th>
                 <th scope="col">Nama Siswa</th>
-                <th scope="col">Detail</th>
+                <th scope="col">Jenis Kelamin</th>
+                <th scope="col">Berjilbab</th>
+                <th scope="col">Total Bayar</th>
+                <th scope="col">Status</th>
+                <th scope="col">Cetak</th>
                 </tr>
             </thead>
-            <tbody id="data">
-                <?php 
+            <tbody>
+            <?php 
+                if(isset($_GET['cari'])){
+                    $cari = $_GET['cari'];
+                    $sql = "SELECT * FROM detail_seragam WHERE nama_siswa LIKE '%".$cari."%' OR nis LIKE '%".$cari."%'";		
+                    $result = $conn->query($sql);		
+                }else{
+                    $sql = "SELECT * FROM detail_seragam";	
+                    $result = $conn->query($sql); 	
+                }
                 $i = 1;
-                if (count($datas) > 0) :
-                    foreach ($datas as $data) : ?>
+                while($data = $result->fetch_assoc()){ ?>
                 <tr>
+                <form action="print.php" method="POST" id="form-catch">
                     <th><?= $i; ?></th>
                     <td><?= $data['nis']; ?></td>
                     <td><?= $data['nama_siswa']; ?></td>
-                    <td>
-                        <a href="detail_siswa.php?id=<?=$data['id_siswa']?>" class="btn btn-primary mx-2">Detail</a>
-                    </td>
+                    <td><?= $data['jenis_kelamin']; ?></td>
+                    <?php if($data['jenis_kelamin'] == 'Pria') : ?>
+                        <td>
+                        <div class="mb-3 form-check" style="  display: flex; justify-content: center;">
+                            <input type="checkbox" disabled="disabled" class="form-check-input" id="jilbab" style="width: 20px; height: 20px;">
+                        </div>
+                        </td>
+                        <td><?= $data['uang_kesiswaan']; ?></td>
+                    <?php else : ?>
+                        <td>
+                            <div class="mb-3 form-check" style="  display: flex; justify-content: center;">
+                                <input type="checkbox" class="form-check-input" name='jilbab[]' value="Ya" style="width: 20px; height: 20px;">
+                            </div>
+                        </td>
+                        <td><?= $data['uang_kesiswaan']; ?></td>
+                    <?php endif; ?>
+                    <?php if($data['status'] == 'Lunas') : ?>
+                        <td><?= $data['status']; ?></td>
+                        <td>
+                            <button href="print.php?id=<?=$data['id_siswa']?>" class="btn btn-success mx-2" disabled>Cetak</button>
+                        </td>
+                    <?php else : ?>
+                        <td><?= $data['status']; ?></td>
+                        <td>
+                            <!-- <input class="btn btn-success mx-2" type="submit" onclick="location.href='print.php?id=<?=$data['id_siswa']?>';"> -->
+                            <a href="print.php?id=<?=$data['id_siswa']?>" class="btn btn-success mx-2" onclick="document.getElementById('form-catch').submit()">Cetak</a>
+                        </td>
+                    <?php endif; ?>
                     <?php $i++; ?>
                 </tr>
-                <?php endforeach; ?>
-                <?php else : ?>
-                    <td>Tidak ada data</td> 
-                    <td>Tidak ada data</td> 
-                    <td>Tidak ada data</td> 
-                    <td>Tidak ada data</td> 
-                <?php endif; ?> 
+                </form>
+                <?php } ?>
             </tbody>
         </table>
     </div>
-    <!-- Jquery -->
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
-    <!-- pooper js -->
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js" integrity="sha384-7+zCNj/IqJ95wo16oMtfsKbZ9ccEh31eOz1HGyDuCQ6wgnyJNSYdrPa03rtR1zdB" crossorigin="anonymous"></script>
     <!-- Bootstrap -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
-    <!-- <script src="searchName.js"></script> -->
 </body>
 </html>
-
-<script>
-    var search = document.getElementById("search");
-
-    search.addEventListener("keyup", function () {
-    $("#data").html("");
-    $.get("./dataSearch.php?search=" + search.value,  function (response) {
-        if (response.length == 0) {
-            $("#data").html("<tr><td>" + "-" + "</td>" + "<td>" + "NISN tidak ditemukan" + "</td>" + "<td>" + "Nama tidak ditemukan" + "</td>" + "<td>" + "-" + "</td></tr>");
-        } else {
-            for (var i = 0; i < response.length; i++) {
-            $("#data").append("<tr><td>" + (i+1) + "</td>" + "<td>" + response[i]["nis"] + "</td>" + "<td>" + response[i]["nama_siswa"] + "</td>" + "<td><a href='detail_siswa.php?id="+ response[i]["id_siswa"] + "' class='btn btn-primary mx-2'>Detail</a>" + "</td></tr>");
-        }
-        }});
-    }); 
-</script>
