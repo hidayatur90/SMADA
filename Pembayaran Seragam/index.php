@@ -19,6 +19,8 @@ if (isset($_POST['submit'])) {
     if ($result->num_rows > 0) {
         $row = mysqli_fetch_assoc($result);
         $_SESSION['username'] = $row['username'];
+        $_SESSION['nama'] = $row['nama'];
+        echo session_id();
         header("Location: detail_seragam.php");
     } else {
         echo "<script>alert('Username atau password Anda salah. Silahkan coba lagi!')</script>";

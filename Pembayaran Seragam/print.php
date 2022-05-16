@@ -2,19 +2,35 @@
 
 require_once('db_config.php');
 
+session_start();
+$username = $_SESSION['username'];
+
 $id_siswa = $_GET['id'];
  
 $result = mysqli_query($conn, "SELECT * FROM detail_seragam WHERE id_siswa=$id_siswa");
- 
+
 while($row = mysqli_fetch_array($result))
 {
-	$nis = $row['nis'];
+	$no_pendaftaran = $row['no_pendaftaran'];
 	$nama_siswa = $row['nama_siswa'];
-	$uang_kesiswaan = $row['uang_kesiswaan'];
+	$total_bayar = $row['total_bayar'];
 	$jenis_kelamin = $row['jenis_kelamin'];
-	$jilbab = $_GET['jilbab'];
-	$status = $row['status'];
+	$asal_sekolah = $row['asal_sekolah'];
+	$jilbab = $row['jilbab'];
+    $penerima = $row['penerima'];
 }
+
+$select_nama_penerima = mysqli_query($conn, "SELECT * FROM users WHERE username='$username'");
+while($row = mysqli_fetch_array($select_nama_penerima))
+{
+	$id_user = $row['id_user'];
+	$nama_user = $row['nama'];
+}
+// update penerima
+$date = date('Y-m-d');
+$update = "UPDATE detail_seragam SET tanggal='$date', penerima='$nama_user' WHERE id_siswa=$id_siswa";
+$stmt = $conn->prepare($update);
+$stmt->execute();
 ?>
 
 <!DOCTYPE html>
@@ -25,43 +41,211 @@ while($row = mysqli_fetch_array($result))
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Jquery CDN -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <title>Detail data siswa</title>
 </head>
 <body>
+    <style>
+        body {
+            font-family: "Times New Roman", Times, serif;
+        }
+        img {
+            -webkit-filter: grayscale(100%); /* Safari 6.0 - 9.0 */
+            filter: grayscale(100%);
+        }
+        div.h4,p {
+            line-height: 50%;
+        }
+        tr {
+            line-height: 50%;
+        }
+        hr {
+            border-top: solid 1px #000 !important;
+        }
+        @page {
+            size: A4;
+            margin: 0;
+        }
+        @media print {
+        html, body {
+            width: 210mm;
+            height: 297mm;
+        }
+        /* ... the rest of the rules ... */
+        }
+    </style>
+    <!-- BUKTI PEMBAYARAN SERAGAM -->
+    <div class="mt-3" style="margin-bottom: 30px;">
+        <div style="float: left; margin-right: 50px;">
+            <img src="smada.png" width="80" height="80"/>
+        </div>
+        <div>
+            <h4>SMAN 2 BONDOWOSO</h4>
+            <p>Penerimaan Peserta Didik Baru</p>
+            <p>Tahun 2022</p>
+        </div>
+    </div>
+    <hr style="height:5px;">
+    
+    <h5 class="text-center"><strong>BUKTI PEMBAYARAN SERAGAM</strong></h5>
+
     <table class="table table-light table-borderless">
-        <tr>
-            <th>NISN</th>
-            <td>: <?= $nis; ?></td>
+        <tr hidden>
+            <th hidden>id</th>
+            <td hidden id="id_siswa">: <?= $id_siswa; ?></td>
         </tr>
         <tr>
-            <th>Nama</th>
-            <td>: <?= $nama_siswa; ?></td>
+            <th>No. Pendaftaran</th>
+            <td id="nis">: <?= $no_pendaftaran; ?></td>
+        </tr>
+        <tr>
+            <th>Nama </th>
+            <td id="nama_siswa">: <?= $nama_siswa;?></td>
         </tr>
         <tr>
             <th>Jenis Kelamin</th>
-            <td>: <?= $jenis_kelamin; ?></td>
+            <td id="jenis_kelamin">: <?= $jenis_kelamin; ?></td>
         </tr>
         <tr>
-            <th>Berjilbab</th>
-            <td>: <?= $jilbab; ?></td>
+            <th>Asal Sekolah</th>
+            <td id="asal_sekolah">: <?= $asal_sekolah; ?></td>
         </tr>
         <tr>
-            <th>Total bayar</th>
-            <td>: <?= $uang_kesiswaan; ?></td>
+            <th>Jenis Seragam</th>
+            <td id="jilbab">: <?= $jilbab; ?></td>
         </tr>
         <tr>
-            <th>Status Bayar</th>
-            <td>: <?= $status; ?></td>
+            <th>Total Bayar</th>
+            <td id="total_bayar">: <?= $total_bayar; ?></td>
+        </tr>
+        <tr style="margin: 10px;">
+            <th>Keterangan</th>
+            <td id="keterangan" width="165" style="padding: 30px; border: 2px solid black;float: left;font-size: 30px"><strong>LUNAS</strong></td>
         </tr>
     </table>
+
+    <div style="float: right">
+        <table class="table table-light table-borderless">
+            <div>
+                <tr>
+                    <td>Bondowoso, <?= date("d - m - Y"); ?></td>
+                </tr>
+                <tr>
+                    <td>Penerima</td>
+                </tr>
+                <tr>
+                    <td ></td>
+                </tr>
+                <tr>
+                    <td ></td>
+                </tr>
+                <tr>
+                    <td ></td>
+                </tr>
+                <tr>
+                    <td ></td>
+                </tr>
+                <tr>
+                    <td ><?= $nama_user; ?></td>
+                </tr>
+            </div>
+        </table>
+    </div>
+
+    <!-- BUKTI PEMBAYARAN SERAGAM -->
+    <p style="margin-top: 920px;">.</p>
+    <div class="mt-3" style="margin-bottom: 30px;">
+        <div style="float: left; margin-right: 50px;">
+            <img src="smada.png" width="80" height="80"/>
+        </div>
+        <div>
+            <h4>SMAN 2 BONDOWOSO</h4>
+            <p>Penerimaan Peserta Didik Baru</p>
+            <p>Tahun 2022</p>
+        </div>
+    </div>
+    <hr style="height:5px;">
+    
+    <h5 class="text-center"><strong>BUKTI PEMBAYARAN SERAGAM</strong></h5>
+
+    <table class="table table-light table-borderless">
+        <tr hidden>
+            <th hidden>id</th>
+            <td hidden id="id_siswa">: <?= $id_siswa; ?></td>
+        </tr>
+        <tr>
+            <th>No. Pendaftaran</th>
+            <td id="nis">: <?= $no_pendaftaran; ?></td>
+        </tr>
+        <tr>
+            <th>Nama </th>
+            <td id="nama_siswa">: <?= $nama_siswa;?></td>
+        </tr>
+        <tr>
+            <th>Jenis Kelamin</th>
+            <td id="jenis_kelamin">: <?= $jenis_kelamin; ?></td>
+        </tr>
+        <tr>
+            <th>Asal Sekolah</th>
+            <td id="asal_sekolah">: <?= $asal_sekolah; ?></td>
+        </tr>
+        <tr>
+            <th>Jenis Seragam</th>
+            <td id="jilbab">: <?= $jilbab; ?></td>
+        </tr>
+        <tr>
+            <th>Total Bayar</th>
+            <td id="total_bayar">: <?= $total_bayar; ?></td>
+        </tr>
+        <tr style="margin: 10px;">
+            <th>Keterangan</th>
+            <td id="keterangan" width="165" style="padding: 30px; border: 2px solid black;float: left;font-size: 30px"><strong>LUNAS</strong></td>
+        </tr>
+    </table>
+
+    <div style="float: right">
+        <table class="table table-light table-borderless">
+            <div>
+                <tr>
+                    <td>Bondowoso, <?= date("d - m - Y"); ?></td>
+                </tr>
+                <tr>
+                    <td>Penerima</td>
+                </tr>
+                <tr>
+                    <td ></td>
+                </tr>
+                <tr>
+                    <td ></td>
+                </tr>
+                <tr>
+                    <td ></td>
+                </tr>
+                <tr>
+                    <td ></td>
+                </tr>
+                <tr>
+                    <td ><?= $nama_user; ?></td>
+                </tr>
+            </div>
+        </table>
+    </div>
+
     <script>
         window.print();
+        var id_siswa = $('#id_siswa').value;
+        var nis = $('#nis').value;
+        var nama_siswa = $('#nama_siswa').value;
+        var jenis_kelamin = $('#jenis_kelamin').value;
+        // var jilbab = $('#jilbab').value;
+        var uang_kesiswaan = $('#uang_kesiswaan').value;
+
+        window.onafterprint = function(){
+            alert('Berhasil');
+            location.href = "./detail_seragam.php";
+        }
     </script>
-    <!-- <div class="col-12">
-        <a href="index.php" class="btn btn-primary w-100 my-3">
-            <i class="bi-arrow-left-short"></i> Back
-        </a>
-    </div> -->
     <!-- Bootstrap -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
 </body>
