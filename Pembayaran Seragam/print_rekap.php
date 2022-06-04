@@ -113,7 +113,7 @@ while($row = mysqli_fetch_array($get_total_terima))
         </tr>
         <tr>
             <th>Total Terima : </th>
-            <td>: Rp. <?= $total_terima; ?></td>
+            <td>: <?= "Rp " . number_format($total_terima,2,',','.'); ?></td>
         </tr>
     </table>
 

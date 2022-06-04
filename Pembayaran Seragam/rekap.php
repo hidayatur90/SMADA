@@ -85,7 +85,7 @@ while($row = mysqli_fetch_array($get_total_terima))
                                     </tr>
                                     <tr>
                                         <th>Total Terima : </th>
-                                        <td>: Rp. <?= $total_terima; ?></td>
+                                        <td>: <?= "Rp " . number_format($total_terima,2,',','.'); ?></td>
                                     </tr>
                                 </table>
                                 <?php $i++; ?>
@@ -94,6 +94,7 @@ while($row = mysqli_fetch_array($get_total_terima))
                         </tbody>
                         
                         <a href="print_rekap.php?id=<?=$data['id_user']?>" class="btn btn-success mx-2 w-100" onclick="document.getElementById('form-catch').submit()">Cetak Rekap</a>
+                        <a href="print_rekap.php?id=<?=$data['id_user']?>" class="btn btn-secondary mx-2 w-100 mt-2" onclick="document.getElementById('form-catch').submit()">Detail Rekap</a>
                         <?php } ?>
                     </div>
                 </div>    

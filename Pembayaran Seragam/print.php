@@ -27,7 +27,7 @@ while($row = mysqli_fetch_array($select_nama_penerima))
 	$nama_user = $row['nama'];
 }
 // update penerima
-$date = date('Y-m-d');
+$date = date('d-m-Y');
 $update = "UPDATE detail_seragam SET tanggal='$date', penerima='$nama_user' WHERE id_siswa=$id_siswa";
 $stmt = $conn->prepare($update);
 $stmt->execute();
