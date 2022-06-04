@@ -26,11 +26,6 @@ while($row = mysqli_fetch_array($select_nama_penerima))
 	$id_user = $row['id_user'];
 	$nama_user = $row['nama'];
 }
-// update penerima
-$date = date('d-m-Y');
-$update = "UPDATE detail_seragam SET tanggal='$date', penerima='$nama_user' WHERE id_siswa=$id_siswa";
-$stmt = $conn->prepare($update);
-$stmt->execute();
 ?>
 
 <!DOCTYPE html>
@@ -43,11 +38,13 @@ $stmt->execute();
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <!-- Jquery CDN -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="print.css" media="print" />
     <title>Detail data siswa</title>
 </head>
 <body>
     <style>
         body {
+            display: none;
             font-family: "Times New Roman", Times, serif;
         }
         img {
@@ -72,9 +69,14 @@ $stmt->execute();
             width: 210mm;
             height: 297mm;
         }
+        /* #noprint { display: none; }
+        #print { display: block; } */
         /* ... the rest of the rules ... */
         }
     </style>
+    <div id="noprint">
+    </div>
+    <div id="print">
     <!-- BUKTI PEMBAYARAN SERAGAM -->
     <div class="mt-3" style="margin-bottom: 30px;">
         <div style="float: left; margin-right: 50px;">
@@ -117,7 +119,7 @@ $stmt->execute();
         </tr>
         <tr>
             <th>Total Bayar</th>
-            <td id="total_bayar">: <?= $total_bayar; ?></td>
+            <td id="total_bayar">: <?= "Rp " . number_format($total_bayar,2,',','.'); ?></td>
         </tr>
         <tr style="margin: 10px;">
             <th>Keterangan</th>
@@ -231,20 +233,48 @@ $stmt->execute();
             </div>
         </table>
     </div>
+    </div>
 
     <script>
-        window.print();
-        var id_siswa = $('#id_siswa').value;
-        var nis = $('#nis').value;
-        var nama_siswa = $('#nama_siswa').value;
-        var jenis_kelamin = $('#jenis_kelamin').value;
-        // var jilbab = $('#jilbab').value;
-        var uang_kesiswaan = $('#uang_kesiswaan').value;
+        // window.print();
+        // window.onafterprint = window.close;
+    //     (function() {
+    //     var beforePrint = function() {
+    //         location.href = "./detail_seragam.php";
+    //     };
+    //     var afterPrint = function() {
+    //         location.href = "./detail_seragam.php";
+    //         <?php
+    //         // update penerima
+    //         $date = date('Y-m-d');
+    //         $update = "UPDATE detail_seragam SET tanggal='$date', penerima='$nama_user' WHERE id_siswa=$id_siswa";
+    //         $stmt = $conn->prepare($update);
+    //         $stmt->execute(); ?>
+    //     };
 
-        window.onafterprint = function(){
-            alert('Berhasil');
-            location.href = "./detail_seragam.php";
-        }
+    //     if (window.matchMedia) {
+    //         var mediaQueryList = window.print();
+    //         mediaQueryList.addListener(function(mql) {
+    //             if (mql.matches) {
+    //                 beforePrint();
+    //             } else {
+    //                 afterPrint();
+    //             }
+    //         });
+    //     }
+
+    //     window.onbeforeprint = beforePrint;
+    //     window.onafterprint = afterPrint;
+    // }());
+        // window.onafterprint = function(){
+        //     location.href = "./detail_seragam.php";
+        //     <?php
+        //     // update penerima
+        //     $date = date('Y-m-d');
+        //     $update = "UPDATE detail_seragam SET tanggal='$date', penerima='$nama_user' WHERE id_siswa=$id_siswa";
+        //     $stmt = $conn->prepare($update);
+        //     $stmt->execute(); ?>
+        // }
     </script>
     <!-- Bootstrap -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>

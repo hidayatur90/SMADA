@@ -24,7 +24,7 @@ $date = date('Y-m-d');
     <div class="container mt-3">
         <form action="" method="POST">
             <a href="logout.php" class="btn btn-danger">Logout</a>
-            <a href="detail_rekap.php?date=Semua" class="btn btn-warning">Rekap</a>
+            <a href="detail_rekap.php?date=Semua" class="btn btn-warning">Lihat Rekap Siswa</a>
         </form>
         <form action="detail_seragam.php" method="GET">
             <div class="input-group my-3 col-12 col-xxl-3 col-xl-3 col-lg-3 col-md-4 col-sm-10">
