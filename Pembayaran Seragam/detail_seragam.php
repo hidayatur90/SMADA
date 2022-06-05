@@ -78,6 +78,7 @@ $date = date('Y-m-d');
                                     <td><?= $data['jenis_kelamin']; ?></td>
                                     <td><?= $data['jilbab']; ?></td>
                                     <td><?= "Rp " . number_format($data['total_bayar'],2,',','.'); ?></td>
+                                    <!-- Cetak -->
                                     <?php if($data['penerima'] != '') : ?>
                                         <td>
                                             <button href="print.php?id=<?=$data['id_siswa']?>" class="btn btn-success mx-2" disabled>Cetak</button>

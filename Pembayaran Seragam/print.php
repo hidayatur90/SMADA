@@ -38,13 +38,13 @@ while($row = mysqli_fetch_array($select_nama_penerima))
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <!-- Jquery CDN -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-    <link rel="stylesheet" type="text/css" href="print.css" media="print" />
+    <!-- <link rel="stylesheet" type="text/css" href="print.css" media="print" /> -->
     <title>Detail data siswa</title>
 </head>
 <body>
     <style>
         body {
-            display: none;
+            /* display: none; */
             font-family: "Times New Roman", Times, serif;
         }
         img {
@@ -238,34 +238,34 @@ while($row = mysqli_fetch_array($select_nama_penerima))
     <script>
         // window.print();
         // window.onafterprint = window.close;
-    //     (function() {
-    //     var beforePrint = function() {
-    //         location.href = "./detail_seragam.php";
-    //     };
-    //     var afterPrint = function() {
-    //         location.href = "./detail_seragam.php";
-    //         <?php
-    //         // update penerima
-    //         $date = date('Y-m-d');
-    //         $update = "UPDATE detail_seragam SET tanggal='$date', penerima='$nama_user' WHERE id_siswa=$id_siswa";
-    //         $stmt = $conn->prepare($update);
-    //         $stmt->execute(); ?>
-    //     };
+        (function() {
+        var beforePrint = function() {
+            location.href = "./detail_seragam.php";
+        };
+        var afterPrint = function() {
+            location.href = "./detail_seragam.php";
+            <?php
+            // update penerima
+            $date = date('Y-m-d');
+            $update = "UPDATE detail_seragam SET tanggal='$date', penerima='$nama_user' WHERE id_siswa=$id_siswa";
+            $stmt = $conn->prepare($update);
+            $stmt->execute(); ?>
+        };
 
-    //     if (window.matchMedia) {
-    //         var mediaQueryList = window.print();
-    //         mediaQueryList.addListener(function(mql) {
-    //             if (mql.matches) {
-    //                 beforePrint();
-    //             } else {
-    //                 afterPrint();
-    //             }
-    //         });
-    //     }
+        if (window.matchMedia) {
+            var mediaQueryList = window.print();
+            mediaQueryList.addListener(function(mql) {
+                if (mql.matches) {
+                    beforePrint();
+                } else {
+                    afterPrint();
+                }
+            });
+        }
 
-    //     window.onbeforeprint = beforePrint;
-    //     window.onafterprint = afterPrint;
-    // }());
+        window.onbeforeprint = beforePrint;
+        window.onafterprint = afterPrint;
+    }());
         // window.onafterprint = function(){
         //     location.href = "./detail_seragam.php";
         //     <?php
