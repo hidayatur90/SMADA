@@ -6,6 +6,8 @@ session_start();
 $username = $_SESSION['username'];
 
 $id_siswa = $_GET['id'];
+$this_date = $_GET['date'];
+$date = strtotime($this_date);
 
 $select_nama_penerima = mysqli_query($conn, "SELECT * FROM users WHERE username='$username'");
 while($row = mysqli_fetch_array($select_nama_penerima))
@@ -32,6 +34,7 @@ while($row = mysqli_fetch_array($get_total_terima))
 {
     $total_terima = $row['total_terima'];
 }
+
 ?>
 
 <!DOCTYPE html>
@@ -97,8 +100,13 @@ while($row = mysqli_fetch_array($get_total_terima))
             <td>: <?= $nama_user; ?></td>
         </tr>
         <tr>
-            <th>Tanggal </th>
-            <td>: <?= date('d - m - Y');?></td>
+            <?php if($this_date=="Semua") { ?>
+                <th>Tanggal </th>
+                <td>: Semua </td>
+            <?php } else { ?>
+                <th>Tanggal </th>
+                <td>: <?= date("d-m-Y", $date) ?></td>
+            <?php }?>
         </tr>
         <tr style="padding: 5px;">
             <th>Jenis Seragam :</th>

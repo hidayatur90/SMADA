@@ -176,7 +176,7 @@ while($row = mysqli_fetch_array($get_date))
                     </form>
                 </tbody>
                 
-                <a href="print_rekap.php?id=<?=$data['id_user']?>" class="btn btn-success mx-2 w-100" onclick="document.getElementById('form-catch').submit()">Cetak Rekap</a>
+                <a href="print_rekap.php?id=<?=$data['id_user']?>&date=<?= $this_date ?>" class="btn btn-success mx-2 w-100" onclick="document.getElementById('form-catch').submit()">Cetak Rekap</a>
                 <?php } ?>
             </div>
         </div>
