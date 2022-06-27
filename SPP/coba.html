@@ -1,0 +1,43 @@
+<style>
+    .multiselect{width:200px;}
+    .selectBox{position: relative;}
+    .selectBox select {width:100%;}
+    .overSelect {position: absolute;left: 0;right: 0;top: 0;bottom: 0;}
+    #checkboxes {display: none;border: 1px #a0a0a0 solid;}
+    #checkboxes label {display: block;}
+    #checkboxes label:hover {background-color: #1e90ff;}
+</style>
+     
+<form>
+    <div class="multiselect">
+        <div class="selectBox" onclick="showCheckboxes()">
+            <select>
+                <option readonly>Pilih opsi</option>
+            </select>
+            <div class="overSelect"></div>
+        </div>
+        <div id="checkboxes">
+            <label for="satu">
+            <input type="checkbox" id="satu" name="pilih[]" value="1" />Pilihan Pertama</label>
+            <label for="dua">
+            <input type="checkbox" id="dua" name="pilih[]" value="2" />Pilihan Kedua</label>
+            <label for="tiga">
+            <input type="checkbox" id="tiga" name="pilih[]" value="3" />Pilihan Ketiga</label>
+        </div>
+    </div>
+    <p><input type="submit" value="Submit"></p>
+</form>
+    
+<script>
+    var expanded = false;
+    function showCheckboxes() {
+        var checkboxes = document.getElementById("checkboxes");
+        if (!expanded) {
+            checkboxes.style.display = "block";
+            expanded = true;
+        } else {
+            checkboxes.style.display = "none";
+            expanded = false;
+        }
+    }
+</script>
