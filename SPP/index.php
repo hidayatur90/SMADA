@@ -21,7 +21,7 @@ if (isset($_POST['submit'])) {
         $_SESSION['username'] = $row['username'];
         $_SESSION['nama'] = $row['nama'];
         echo session_id();
-        header("Location: main.php?kelas=Semua");
+        header("Location: main.php?cari=");
     } else {
         echo "<script>alert('Username atau password Anda salah. Silahkan coba lagi!')</script>";
     }

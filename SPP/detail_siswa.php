@@ -129,7 +129,7 @@ if(isset($_POST['submit'])) {
                         <div class="col-sm-8 col-md-9 col-xl-10">
                         <select class="form-control" type="text" name="month" id="month" required>
                             <option value="0" hidden>Pilih</option>
-                            <option value="1"><input type="checkbox">Januari</option>
+                            <option value="1">Januari</option>
                             <option value="2">Februari</option>
                             <option value="3">Maret</option>
                             <option value="4">April</option>
@@ -168,18 +168,6 @@ if(isset($_POST['submit'])) {
         crossorigin="anonymous">
     </script>
     <script>
-        var expanded = false;
-        function showCheckboxes() {
-            var checkboxes = document.getElementById("checkboxes");
-            if (!expanded) {
-                checkboxes.style.display = "block";
-                expanded = true;
-            } else {
-                checkboxes.style.display = "none";
-                expanded = false;
-            }
-        }
-
         var alredy_month = document.getElementById("alredy_month");
         var list_month = alredy_month.value.split(",");
 
