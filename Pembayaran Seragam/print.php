@@ -6,7 +6,6 @@ session_start();
 $username = $_SESSION['username'];
 
 $id_siswa = $_GET['id'];
- 
 $result = mysqli_query($conn, "SELECT * FROM detail_seragam WHERE id_siswa=$id_siswa");
 
 while($row = mysqli_fetch_array($result))
@@ -123,7 +122,11 @@ while($row = mysqli_fetch_array($select_nama_penerima))
         </tr>
         <tr style="margin: 10px;">
             <th>Keterangan</th>
-            <td id="keterangan" width="165" style="padding: 30px; border: 2px solid black;float: left;font-size: 30px"><strong>LUNAS</strong></td>
+            <?php if($total_bayar < 150000): ?>
+                <td id="keterangan" width="165" style="padding: 30px; border: 2px solid black;float: left;font-size: 30px"><strong>Cicil</strong></td>
+            <?php elseif($total_bayar >= 150000): ?>
+                <td id="keterangan" width="165" style="padding: 30px; border: 2px solid black;float: left;font-size: 30px"><strong>LUNAS</strong></td>
+            <?php endif; ?>
         </tr>
     </table>
 

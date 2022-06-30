@@ -8,8 +8,15 @@ if (!isset($_SESSION['username'])) {
     header("Location: index.php");
 }
 $date = date('Y-m-d');
+
+if(isset($_POST['cetak']))
+{	
+	$id = $_POST['id_siswa'];
+	$total_bayar = $_POST['total_bayar'];
+    $result = mysqli_query($conn, "UPDATE detail_seragam SET total_bayar=$total_bayar WHERE id_siswa=$id");
+    header("Location: print.php?id=".$id);
+}
 ?>
- 
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -18,6 +25,8 @@ $date = date('Y-m-d');
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
     <link rel="stylesheet" type="text/css" href="style.css">
+    <!-- <script src="sweetalert2.min.js"></script>
+    <link rel="stylesheet" href="sweetalert2.min.css"> -->
     <title>Cetak Seragam</title>
 </head>
 <body>
@@ -70,27 +79,26 @@ $date = date('Y-m-d');
                                 $i = 1;
                                 while($data = $result->fetch_assoc()){ ?>
                                 <tr>
-                                <form action="print.php" method="POST" id="form-catch">
+                                <form action="detail_seragam.php" method="POST" id="form-catch">
                                     <th><?= $i; ?></th>
                                     <td><?= $data['no_pendaftaran']; ?></td>
                                     <td><?= $data['nama_siswa']; ?></td>
                                     <td><?= $data['asal_sekolah']; ?></td>
                                     <td><?= $data['jenis_kelamin']; ?></td>
                                     <td><?= $data['jilbab']; ?></td>
-                                    <td><?= "Rp " . number_format($data['total_bayar'],2,',','.'); ?></td>
                                     <!-- Cetak -->
                                     <?php if($data['penerima'] != '') : ?>
+                                        <td><?= "Rp " . number_format($data['total_bayar'],2,',','.'); ?></td>
                                         <td>
                                             <button href="print.php?id=<?=$data['id_siswa']?>" class="btn btn-success mx-2" disabled>Cetak</button>
                                         </td>
                                     <?php else : ?>
+                                        <input type="hidden" name="id_siswa" id="id_siswa" value="<?= $data['id_siswa'] ?>">
+                                        <td>Rp. <input type="number" value="<?= $data['total_bayar'] ?>" id="total_bayar" name="total_bayar"></td>
                                         <td>
-                                            <!-- <input class="btn btn-success mx-2" type="submit" onclick="location.href='print.php?id=<?=$data['id_siswa']?>';"> -->
-                                            <a href="print.php?id=<?=$data['id_siswa']?>" class="btn btn-success mx-2" onclick="document.getElementById('form-catch').submit()">Cetak</a>
+                                            <input type="submit" name="cetak" class="btn btn-success mx-3" value="Cetak" onclick="return  confirm('Yakin ingin mencetak?')">
                                         </td>
                                     <?php endif; ?>
-                                    <td>
-                                    </td>
                                     <?php $i++; ?>
                                 </tr>
                                 </form>
@@ -102,6 +110,7 @@ $date = date('Y-m-d');
             </div>
         </div>
     </div>
+
     <!-- Bootstrap -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
 </body>
