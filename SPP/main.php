@@ -7,7 +7,7 @@ $nama = $_SESSION['username'];
 if (!isset($_SESSION['username'])) {
     header("Location: index.php");
 }
-$date = date('Y-m-d');
+$date = date('d-m-Y');
 
 $nipd_siswa = $_GET['cari'];
 if ($nipd_siswa == ""){
@@ -183,6 +183,7 @@ if(isset($_POST['submit'])) {
         </div>
         <div class="modal-body">
             <div class="card-body">
+                <p><strong>Tanggal : </strong><?= $date; ?></p>
                 <form method="post" action="detail_siswa.php?id='<?= $nipd_siswa ?>'">
                     <input type="text" name="alredy_month" id="alredy_month" value="<?= $month_2 ?>" hidden>
                     <!-- Pendidikan -->
@@ -193,26 +194,13 @@ if(isset($_POST['submit'])) {
                                 <label class="form-check-label" for="pendidikan">
                                     <strong>Dana Pendidikan</strong> 
                                 </label>
-                                <select class="form-control" type="text" name="month" id="month" required disabled>
-                                    <option value="0" hidden>Bulan</option>
-                                    <option value="1">Januari</option>
-                                    <option value="2">Februari</option>
-                                    <option value="3">Maret</option>
-                                    <option value="4">April</option>
-                                    <option value="5">Mei</option>
-                                    <option value="6">Juni</option>
-                                    <option value="7">Juli</option>
-                                    <option value="8">Agustus</option>
-                                    <option value="9">September</option>
-                                    <option value="10">Oktober</option>
-                                    <option value="11">November</option>
-                                    <option value="12">Desember</option>
-                                </select>
-                                </div>
+                                <!-- Nominal -->
+                                <input type="number" class="form-control" min="0" name="nominal" id="nominal_pendidikan" onblur="findTotal()" placeholder="Nominal" autocomplete="off" required disabled oninvalid="this.setCustomValidity('Jumlah Nominal harus angka')" oninput="this.setCustomValidity('')"/>
                             </div>
-                        <!-- Nominal -->
+                        </div>
+                        <!-- Jumlah -->
                         <div class="col-6 mt-4">
-                            <input type="number" class="form-control" min="0" name="nominal_pendidikan" id="nominal_pendidikan" placeholder="Nominal" autocomplete="off" required disabled oninvalid="this.setCustomValidity('Jumlah Nominal harus angka')" oninput="this.setCustomValidity('')"/>
+                            <input type="number" class="form-control" min="0" max="12" name="jumlah_spp" id="jumlah_spp" placeholder="Jumlah" autocomplete="off" required disabled oninvalid="this.setCustomValidity('Jumlah harus angka')" oninput="this.setCustomValidity('')"/>
                         </div>
                     </div>
                     <!-- Insidental -->
@@ -224,7 +212,7 @@ if(isset($_POST['submit'])) {
                                     <strong>Insidental</strong> 
                                 </label>
                                 <!-- Nominal -->
-                                <input type="number" class="form-control" min="0" name="nominal_insidental" id="nominal_insidental" placeholder="Nominal" autocomplete="off" required disabled oninvalid="this.setCustomValidity('Jumlah Nominal harus angka')" oninput="this.setCustomValidity('')"/>
+                                <input type="number" class="form-control" min="0" name="nominal" id="nominal_insidental" onblur="findTotal()" placeholder="Nominal" autocomplete="off" required disabled oninvalid="this.setCustomValidity('Jumlah Nominal harus angka')" oninput="this.setCustomValidity('')"/>
                             </div>
                         </div>
                     </div>
@@ -237,7 +225,7 @@ if(isset($_POST['submit'])) {
                                     <strong>Dana Kegiatan Kesiswaan</strong> 
                                 </label>
                                 <!-- Nominal -->
-                                <input type="number" class="form-control" min="0" name="nominal_kesiswaan" id="nominal_kesiswaan" placeholder="Nominal" autocomplete="off" required disabled oninvalid="this.setCustomValidity('Jumlah Nominal harus angka')" oninput="this.setCustomValidity('')"/>
+                                <input type="number" class="form-control" min="0" name="nominal" id="nominal_kesiswaan" onblur="findTotal()" placeholder="Nominal" autocomplete="off" required disabled oninvalid="this.setCustomValidity('Jumlah Nominal harus angka')" oninput="this.setCustomValidity('')"/>
                             </div>
                         </div>
                     </div>
@@ -248,7 +236,7 @@ if(isset($_POST['submit'])) {
                                 <strong>Total</strong> 
                             </label>
                             <!-- Nominal -->
-                            <input type="number" class="form-control" min="0" name="nominal_total" id="nominal_total" placeholder="Total" autocomplete="off" required readonly/>
+                            <input type="number" class="form-control" min="0" name="nominal_total" id="nominal_total" placeholder="Nominal" autocomplete="off" required disabled oninvalid="this.setCustomValidity('Jumlah Nominal harus angka')" oninput="this.setCustomValidity('')"/>
                         </div>
                     </div>
 
@@ -270,47 +258,60 @@ if(isset($_POST['submit'])) {
         crossorigin="anonymous">
     </script>
     <script>
-        var month_spp = document.getElementById("month");
+        var month_spp = document.getElementById("jumlah_spp");
         var nom_spp = document.getElementById("nominal_pendidikan");
         var nom_insidental = document.getElementById("nominal_insidental");
-        var nom_kesiswaan= document.getElementById("nominal_kesiswaan");
+        var nom_kesiswaan = document.getElementById("nominal_kesiswaan");
+        var nom_total = document.getElementById("nominal_total");
+        
+        month_spp.addEventListener("input", function(){
+            nom_spp.value = this.value * 60000;
+            nom_total.value = nom_spp.value;
+        });
+
+        function findTotal(){
+            var arr = document.getElementsByName('nominal');
+            var tot=0;
+            for(var i=0;i<arr.length;i++){
+                if(parseInt(arr[i].value))
+                    tot += parseInt(arr[i].value);
+            }
+            nom_total.value = tot;
+        }
 
         $(function() {
-            $('[name="pendidikan"]').change(function() {
+            $('[id="pendidikan"]').change(function() {
                 if ($(this).is(':checked')) {
                     month_spp.removeAttribute("disabled");
-                    nom_spp.removeAttribute("disabled");
                 } else {
+                    $(nom_total).prop('value', nom_total.value - nom_spp.value);
                     $(month_spp).prop('disabled', true);
-                    $(month_spp).prop('value', 0);
-                    $(nom_spp).prop('disabled', true);
+                    $(month_spp).prop('value', " ");
                     $(nom_spp).prop('value', " ");
                 } 
             });
         });
         $(function() {
-            $('[name="insidental"]').change(function() {
+            $('[id="insidental"]').change(function() {
                 if ($(this).is(':checked')) {
                     nom_insidental.removeAttribute("disabled");
                 } else {
+                    $(nom_total).prop('value', nom_total.value - nom_insidental.value);
                     $(nom_insidental).prop('disabled', true);
                     $(nom_insidental).prop('value', " ");
                 } 
             });
         });
         $(function() {
-            $('[name="kesiswaan"]').change(function() {
+            $('[id="kesiswaan"]').change(function() {
                 if ($(this).is(':checked')) {
                     nom_kesiswaan.removeAttribute("disabled");
                 } else {
+                    $(nom_total).prop('value', nom_total.value - nom_kesiswaan.value);
                     $(nom_kesiswaan).prop('disabled', true);
                     $(nom_kesiswaan).prop('value', " ");
                 } 
             });
-        });
-
-        nom_spp.addEventListener("input", function(){
-            document.getElementById("nominal_total").value = this.value + nom_insidental.value;
         });
 
         var alredy_month = document.getElementById("alredy_month");
@@ -325,13 +326,6 @@ if(isset($_POST['submit'])) {
                 });
                 $('select[name="month"]').trigger('change');
             }
-        });
-        // console.log(list_month[]);
-        $('form #month').prop('readonly', true);
-        kelas.addEventListener("input", function(){
-            var strUser = this.value;
-            var nextURL = 'http://localhost:8080/phphida/SMADA/SPP?kelas=' + strUser;
-            window.location.replace(nextURL);
         });
     </script>
 </body>
