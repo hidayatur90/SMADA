@@ -3,7 +3,7 @@
 $server = "localhost";
 $user = "root";
 $pass = "";
-$database = "db_spp";
+$database = "admkeusmada";
  
 $conn = mysqli_connect($server, $user, $pass, $database);
  

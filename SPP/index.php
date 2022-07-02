@@ -6,24 +6,24 @@ error_reporting(0);
  
 session_start();
  
-if (isset($_SESSION['username'])) {
-    header("Location: main.php?kelas=Semua");
+if (isset($_SESSION['nama_user'])) {
+    header("Location: main.php");
 }
  
 if (isset($_POST['submit'])) {
-    $username = $_POST['username'];
-    $password = $_POST['password'];
+    $nama_user = $_POST['nama_user'];
+    $kata_sandi = $_POST['kata_sandi'];
  
-    $sql = "SELECT * FROM users WHERE username='$username' AND password='$password'";
+    $sql = "SELECT * FROM pengguna WHERE nama_user='$nama_user' AND kata_sandi='$kata_sandi'";
     $result = mysqli_query($conn, $sql);
     if ($result->num_rows > 0) {
         $row = mysqli_fetch_assoc($result);
-        $_SESSION['username'] = $row['username'];
+        $_SESSION['nama_user'] = $row['nama_user'];
         $_SESSION['nama'] = $row['nama'];
         echo session_id();
-        header("Location: main.php?cari=");
+        header("Location: main.php");
     } else {
-        echo "<script>alert('Username atau password Anda salah. Silahkan coba lagi!')</script>";
+        echo "<script>alert('Username atau Password Anda salah. Silahkan coba lagi!')</script>";
     }
 }
  
@@ -50,12 +50,12 @@ if (isset($_POST['submit'])) {
                 <hr/>
                 <form action="" method="POST">
                     <div class="form-group">
-                        <label for="username">Username</label>
-                        <input type="text" class="form-control" name="username" placeholder="Username" value="<?php echo $username; ?>" required>
+                        <label for="nama_user">Username</label>
+                        <input type="text" class="form-control" name="nama_user" placeholder="Username" value="<?php echo $nama_user; ?>" required>
                     </div>
                     <div class="form-group mt-3">
-                        <label for="password">Password</label>
-                        <input type="password" class="form-control" name="password" placeholder="Password" value="<?php echo $_POST['password']; ?>" required>
+                        <label for="kata_sandi">Password</label>
+                        <input type="password" class="form-control" name="kata_sandi" placeholder="Password" value="<?php echo $_POST['kata_sandi']; ?>" required>
                     </div>
                     <div class="btn-login mt-3 text-center">
                         <button type="submit" name="submit" class="btn btn-primary" style="width: 150px;">Login</button>
