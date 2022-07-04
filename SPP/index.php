@@ -19,9 +19,14 @@ if (isset($_POST['submit'])) {
     if ($result->num_rows > 0) {
         $row = mysqli_fetch_assoc($result);
         $_SESSION['nama_user'] = $row['nama_user'];
-        $_SESSION['nama'] = $row['nama'];
+        $_SESSION['nama_asli'] = $row['nama_asli'];
+        $_SESSION['role'] = $row['role'];
         echo session_id();
-        header("Location: main.php");
+        if($row['role'] == "admin" || $row['role'] == "petugas"){
+            header("Location: main.php");
+        } else if ($row['role'] == "kepsek") {
+            header("Location: tinjau.php");
+        }
     } else {
         echo "<script>alert('Username atau Password Anda salah. Silahkan coba lagi!')</script>";
     }

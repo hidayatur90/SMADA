@@ -1,13 +1,6 @@
-<?php 
-
-require_once('db_config.php');
-
+<?php
 session_start();
-$nama = $_SESSION['nama_user'];
-if (!isset($_SESSION['nama_user'])) {
-    header("Location: index.php");
-}
-$nama_asli = $_SESSION['nama_asli'];
+$nama = $_SESSION['nama_asli'];
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -22,11 +15,9 @@ $nama_asli = $_SESSION['nama_asli'];
 <body>
     <div class="container">
         <h1 class="text-center">Pilih Menu</h1>
-        <h4>Hallo, <?= $nama_asli ?></h4>
+        <h4>Hallo, <?= $nama ?></h4>
         <ul>
             <a href="daftar_siswa.php?kelas=X-MIPA-1"><li>Data siswa</li></a>
-            <a href="detail_pembayaran.php?cari="><li>Bayar</li></a>
-            <a href="pembatalan.php"><li>Pembatalan</li></a>
             <a href="rekap.php?start=&end="><li>Rekap</li></a>
             <a href="laporan.php?start=&end="><li>Laporan</li></a>
             <a href="logout.php"><li>Logout</li></a>

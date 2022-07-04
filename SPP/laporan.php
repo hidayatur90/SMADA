@@ -1,6 +1,10 @@
 <?php 
 
 require_once('db_config.php');
+
+session_start();
+$role = $_SESSION['role'];
+
 $start_date = $_GET['start'];
 $end_date = $_GET['end'];
 
@@ -94,7 +98,11 @@ $terbilang = terbilang($sum_total);
         }
     </style>
     <div class="container mt-3">
-        <a href="main.php" class="btn btn-secondary mb-2">Kembali</a>
+        <?php if($role == "petugas") {?>
+            <a href="main.php" class="btn btn-secondary mb-2">Kembali</a>
+        <?php } else if ($role == "kepsek") {?>
+            <a href="tinjau.php" class="btn btn-secondary mb-2">Kembali</a>
+        <?php } ?>
         <div class="row">
             <div class="col-3 mb-2">
                 <label for="kelas"><strong>Tanggal : </strong></label>
@@ -202,7 +210,7 @@ $terbilang = terbilang($sum_total);
                                         </div>
                                     </div>
                                     <div class="download mt-3 text-end">
-                                        <a class="btn btn-success" href="">Cetak</a>
+                                        <a class="btn btn-success" href="print_rekap.php?start=<?=$_GET['start']?>&end=<?=$_GET['end']?>&from=laporan">Cetak</a>
                                     </div>
                                 </div>
                             </div>

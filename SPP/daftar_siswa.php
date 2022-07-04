@@ -4,6 +4,9 @@ require_once('db_config.php');
 $this_kelas = $_GET['kelas'];
 // $cari = $_GET['cari'];
 
+session_start();
+$role = $_SESSION['role'];
+
 $all_kelas = [];
 $get_date = mysqli_query($conn, "SELECT DISTINCT(kelas) as kelas FROM datapd");
 while($row = mysqli_fetch_array($get_date))
@@ -24,7 +27,11 @@ while($row = mysqli_fetch_array($get_date))
 </head>
 <body>
     <div class="container mt-3">
-        <a href="main.php" class="btn btn-secondary mb-2">Kembali</a>
+        <?php if($role == "petugas") {?>
+            <a href="main.php" class="btn btn-secondary mb-2">Kembali</a>
+        <?php } else if ($role == "kepsek") {?>
+            <a href="tinjau.php" class="btn btn-secondary mb-2">Kembali</a>
+        <?php } ?>
         <div class="row">
             <div class="col-6 mb-2">
                 <label for="kelas"><strong>Kelas : </strong></label>

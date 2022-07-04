@@ -5,12 +5,8 @@ $start_date = $_GET['start'];
 $end_date = $_GET['end'];
 
 session_start();
-$nama_user = $_SESSION['nama_user'];
-$get_name_user = mysqli_query($conn, "SELECT nama_asli FROM pengguna WHERE nama_user='$nama_user'");
-while($row = mysqli_fetch_array($get_name_user))
-{
-    $nama_asli = $row['nama_asli'];
-}
+$nama_asli = $_SESSION['nama_asli'];
+$role = $_SESSION['role'];
 
 if ($start_date == "" || $end_date == ""){
     $get_sum_nominal = mysqli_query($conn, "SELECT SUM(pendidikan) as sum_spp, SUM(insidental) as sum_insidental, SUM(kesiswaan) as sum_kesiswaan, COUNT(DISTINCT(namapd)) as count_siswa FROM keuangan WHERE (penerima='$nama_asli')");
@@ -102,7 +98,11 @@ $terbilang = terbilang($sum_total);
         }
     </style>
     <div class="container mt-3">
-        <a href="main.php" class="btn btn-secondary mb-2">Kembali</a>
+        <?php if($role == "petugas") {?>
+            <a href="main.php" class="btn btn-secondary mb-2">Kembali</a>
+        <?php } else if ($role == "kepsek") {?>
+            <a href="tinjau.php" class="btn btn-secondary mb-2">Kembali</a>
+        <?php } ?>
         <div class="row">
             <div class="col-3 mb-2">
                 <label for="kelas"><strong>Tanggal : </strong></label>
@@ -210,7 +210,7 @@ $terbilang = terbilang($sum_total);
                                         </div>
                                     </div>
                                     <div class="download mt-3 text-end">
-                                        <a class="btn btn-success" href="">Cetak</a>
+                                        <a class="btn btn-success" href="print_rekap.php?start=<?=$_GET['start']?>&end=<?=$_GET['end']?>&from=rekap">Cetak</a>
                                     </div>
                                 </div>
                             </div>

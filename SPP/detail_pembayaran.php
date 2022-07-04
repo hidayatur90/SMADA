@@ -8,12 +8,8 @@ $nipd_siswa = $_GET['cari'];
 
 if(isset($_POST['submit'])) {
     session_start();
-    $nama_user = $_SESSION['nama_user'];
-    $get_name_user = mysqli_query($conn, "SELECT nama_asli FROM pengguna WHERE nama_user='$nama_user'");
-    while($row = mysqli_fetch_array($get_name_user))
-    {
-        $nama_asli = $row['nama_asli'];
-    }
+    $nama_asli = $_SESSION['nama_asli'];
+
     $get_data_siswa = mysqli_query($conn, "SELECT * FROM keuangan WHERE nipd=$nipd_siswa GROUP BY namapd");
     while($row = mysqli_fetch_array($get_data_siswa))
     {
@@ -28,14 +24,24 @@ if(isset($_POST['submit'])) {
     $kesiswaan = $_POST['nominal_kesiswaan'] ?: 0;
     $pendidikan = $_POST['nominal_pendidikan'] ?: 0;
     $penerima = $nama_asli;
-
-    require_once("db_config.php");
             
     $result = mysqli_query($conn, "INSERT INTO keuangan(tanggal,nipd,namapd,kelas,insidental,kesiswaan,pendidikan,penerima) VALUES('$tanggal','$nipd','$namapd','$kelas',$insidental,$kesiswaan,$pendidikan,'$penerima')");
+    
+    $get_data_rekap = mysqli_query($conn, "SELECT * FROM rekap WHERE nis=$nipd_siswa");
+    while($row = mysqli_fetch_array($get_data_rekap))
+    {
+        $insidental_2 = $row['insidental'];
+        $kesiswaan_2 = $row['kesiswaan'];
+        $pendidikan_2 = $row['pendidikan'];
+    }
+    $insidental_rekap = $insidental_2 + $insidental;
+    $kesiswaan_rekap = $kesiswaan_2 + $kesiswaan;
+    $pendidikan_rekap = $pendidikan_2 + $pendidikan;
+    $result = mysqli_query($conn, "UPDATE rekap SET insidental=$insidental_rekap,kesiswaan=$kesiswaan_rekap,pendidikan=$pendidikan_rekap WHERE nis=$nipd");
     echo "
     <script>
         alert('Data Berhasil ditambahkan');
-        document.location.href = 'detail_pembayaran.php?cari=".$nipd_siswa."';
+        document.location.href = 'bukti_pembayaran.php?nipd=". $nipd ."';
     </script>";
 }
 ?>
@@ -111,50 +117,50 @@ if(isset($_POST['submit'])) {
                                     <?php } else {
                                         $sql = "SELECT *, SUM(pendidikan) as pendidikan, SUM(insidental) as insidental, SUM(kesiswaan) as kesiswaan FROM keuangan WHERE nipd = $cari GROUP BY namapd";		
                                         $result = $conn->query($sql);
-                                    $i = 1;
-                                    if (mysqli_num_rows($result) > 0){ 
-                                    while($data = $result->fetch_assoc()){ ?>
-                                    <table class="table table-borderless" style="width:80%">
-                                        <div class="float-end">
-                                            <button class="btn btn-success me-3 w-100 " data-bs-toggle="modal" data-bs-target="#rekapModal">Bayar</button>
-                                        </div>
-                                        <tr>
-                                            <th>NIPD</th>
-                                            <td>: <?= $data['nipd']; ?></td>
-                                        </tr>
-                                        <tr>
-                                            <th>Nama Siswa</th>
-                                            <td>: <?= $data['namapd']; ?></td>
-                                        </tr>
-                                        <tr>
-                                            <th>Kelas </th>
-                                            <td>: <?= $data['kelas'];?></td>
-                                        </tr>
-                                    </table>
-                                    <p><strong>Rekap Pembayaran yang telah masuk </strong></p>
-                                    <table class="table table-bordered text-center">
-                                        <tbody>
+                                        $i = 1;
+                                        if (mysqli_num_rows($result) > 0){ 
+                                        while($data = $result->fetch_assoc()){ ?>
+                                        <table class="table table-borderless" style="width:80%">
+                                            <div class="float-end">
+                                                <button class="btn btn-success me-3 w-100 " data-bs-toggle="modal" data-bs-target="#rekapModal">Bayar</button>
+                                            </div>
                                             <tr>
-                                                <th>Pendidikan</th>
-                                                <td><?= "Rp. " . number_format($data['pendidikan'],2,',','.'); ?></td>
+                                                <th>NIPD</th>
+                                                <td>: <?= $data['nipd']; ?></td>
                                             </tr>
                                             <tr>
-                                                <th>Insidental</th>
-                                                <td><?= "Rp. " . number_format($data['insidental'],2,',','.'); ?></td>
+                                                <th>Nama Siswa</th>
+                                                <td>: <?= $data['namapd']; ?></td>
                                             </tr>
                                             <tr>
-                                                <th>Kesiswaan</th>
-                                                <td><?= "Rp. " . number_format($data['kesiswaan'],2,',','.'); ?></td>
+                                                <th>Kelas </th>
+                                                <td>: <?= $data['kelas'];?></td>
                                             </tr>
-                                            <?php $i++; ?>
-                                            <?php } ?>
-                                        </tbody>
-                                    </table>
-                                    <?php } else { ?>
-                                        <div class="text-center">
-                                            <h3>Data Siswa Tidak ditemukan.</h3>
-                                        </div>
-                                    <?php } ?>
+                                        </table>
+                                        <p><strong>Rekap Pembayaran yang telah masuk </strong></p>
+                                        <table class="table table-bordered text-center">
+                                            <tbody>
+                                                <tr>
+                                                    <th>Pendidikan</th>
+                                                    <td><?= "Rp. " . number_format($data['pendidikan'],2,',','.'); ?></td>
+                                                </tr>
+                                                <tr>
+                                                    <th>Insidental</th>
+                                                    <td><?= "Rp. " . number_format($data['insidental'],2,',','.'); ?></td>
+                                                </tr>
+                                                <tr>
+                                                    <th>Kesiswaan</th>
+                                                    <td><?= "Rp. " . number_format($data['kesiswaan'],2,',','.'); ?></td>
+                                                </tr>
+                                                <?php $i++; ?>
+                                                <?php } ?>
+                                            </tbody>
+                                        </table>
+                                        <?php } else { ?>
+                                            <div class="text-center">
+                                                <h3>Data Siswa Tidak ditemukan.</h3>
+                                            </div>
+                                        <?php } ?>
                                 <?php }} ?>
                             </tbody>
                         </table>
@@ -241,7 +247,6 @@ if(isset($_POST['submit'])) {
                         </div>
                     </div>
                 </form>
-
             </div>
         </div>
     </div>
