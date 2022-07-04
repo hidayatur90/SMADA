@@ -18,7 +18,6 @@ $nama = $_SESSION['nama_asli'];
         <h4>Hallo, <?= $nama ?></h4>
         <ul>
             <a href="daftar_siswa.php?kelas=X-MIPA-1"><li>Data siswa</li></a>
-            <a href="rekap.php?start=&end="><li>Rekap</li></a>
             <a href="laporan.php?start=&end="><li>Laporan</li></a>
             <a href="logout.php"><li>Logout</li></a>
         </ul>
