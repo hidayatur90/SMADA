@@ -1,13 +1,13 @@
 <?php 
  
-include 'db_config.php';
+include 'db/db_config.php';
  
 error_reporting(0);
  
 session_start();
  
 if (isset($_SESSION['nama_user'])) {
-    header("Location: main.php");
+    header("Location: keuangan/main.php");
 }
  
 if (isset($_POST['submit'])) {
@@ -23,9 +23,13 @@ if (isset($_POST['submit'])) {
         $_SESSION['role'] = $row['role'];
         echo session_id();
         if($row['role'] == "admin" || $row['role'] == "petugas"){
-            header("Location: main.php");
+            header("Location: keuangan/main.php");
         } else if ($row['role'] == "kepsek") {
-            header("Location: tinjau.php");
+            header("Location: kepsek/tinjau.php");
+        } else if ($row['role'] == "waka") {
+            header("Location: waka/dash_waka.php");
+        } else if ($row['role'] == "bendahara") {
+            header("Location: bendahara/dash_bendahara.php");
         }
     } else {
         echo "<script>alert('Username atau Password Anda salah. Silahkan coba lagi!')</script>";
@@ -41,7 +45,7 @@ if (isset($_POST['submit'])) {
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="assets/css/style.css">
     <title>Login</title>
 </head>
 <body>

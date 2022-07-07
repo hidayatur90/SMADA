@@ -1,5 +1,5 @@
 <?php
-require_once("db_config.php");
+require_once("../db/db_config.php");
  
 $id = $_GET['id'];
 session_start();

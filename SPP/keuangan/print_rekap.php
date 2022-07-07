@@ -1,32 +1,19 @@
 <?php
 
-require_once('db_config.php');
+require_once('../db/db_config.php');
 
 $start_date = $_GET['start'];
 $end_date = $_GET['end'];
-$from = $_GET['from'];
 
-if($from == 'rekap' ){
-    session_start();
-    $nama_asli = $_SESSION['nama_asli'];
+session_start();
+$nama_asli = $_SESSION['nama_asli'];
 
+if ($start_date == "" || $end_date == ""){
+    $get_sum_nominal = mysqli_query($conn, "SELECT SUM(pendidikan) as sum_spp, SUM(insidental) as sum_insidental, SUM(kesiswaan) as sum_kesiswaan, COUNT(DISTINCT(namapd)) as count_siswa FROM keuangan WHERE (penerima='$nama_asli')");
 } else {
-    $nama_asli = "Keuangan";
+    $get_sum_nominal = mysqli_query($conn, "SELECT SUM(pendidikan) as sum_spp, SUM(insidental) as sum_insidental, SUM(kesiswaan) as sum_kesiswaan, COUNT(DISTINCT(namapd)) as count_siswa FROM keuangan WHERE (penerima='$nama_asli') AND (tanggal BETWEEN '$start_date' AND '$end_date')");
 }
 
-if ($nama_asli != "Keuangan"){
-    if ($start_date == "" || $end_date == ""){
-        $get_sum_nominal = mysqli_query($conn, "SELECT SUM(pendidikan) as sum_spp, SUM(insidental) as sum_insidental, SUM(kesiswaan) as sum_kesiswaan, COUNT(DISTINCT(namapd)) as count_siswa FROM keuangan WHERE (penerima='$nama_asli')");
-    } else {
-        $get_sum_nominal = mysqli_query($conn, "SELECT SUM(pendidikan) as sum_spp, SUM(insidental) as sum_insidental, SUM(kesiswaan) as sum_kesiswaan, COUNT(DISTINCT(namapd)) as count_siswa FROM keuangan WHERE (penerima='$nama_asli') AND (tanggal BETWEEN '$start_date' AND '$end_date')");
-    }
-} else {
-    if ($start_date == "" || $end_date == ""){
-        $get_sum_nominal = mysqli_query($conn, "SELECT SUM(pendidikan) as sum_spp, SUM(insidental) as sum_insidental, SUM(kesiswaan) as sum_kesiswaan, COUNT(DISTINCT(namapd)) as count_siswa FROM keuangan");
-    } else {
-        $get_sum_nominal = mysqli_query($conn, "SELECT SUM(pendidikan) as sum_spp, SUM(insidental) as sum_insidental, SUM(kesiswaan) as sum_kesiswaan, COUNT(DISTINCT(namapd)) as count_siswa FROM keuangan WHERE (tanggal BETWEEN '$start_date' AND '$end_date')");
-    }
-}
 while($row = mysqli_fetch_array($get_sum_nominal))
 {
     $sum_spp = $row['sum_spp'];
@@ -87,7 +74,6 @@ $terbilang = terbilang($sum_total);
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <!-- Jquery CDN -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-    <!-- <link rel="stylesheet" type="text/css" href="print.css" media="print" /> -->
     <title>Cetak Rekapitulasi</title>
 </head>
 <body>
@@ -132,11 +118,7 @@ $terbilang = terbilang($sum_total);
     <div id="print">
         <!-- Peserta Didik -->
         <div class="text-center">
-            <?php if($nama_asli == "Keuangan") { ?>
-                <h5><strong>LAPORAN KEUANGAN</strong></h5>
-            <?php }else{?>
-                <h5><strong>BUKTI REKAP KEUANGAN</strong></h5>
-            <?php } ?> 
+            <h5><strong>BUKTI REKAP KEUANGAN</strong></h5>
             <h4><strong>SMA NEGERI 2 BONDOWOSO</strong></h4>
         </div>
         <hr style="height:5px;">
@@ -165,15 +147,15 @@ $terbilang = terbilang($sum_total);
                     <tbody>
                         <tr>
                             <th class="text-start">1. Dana Pendidikan</th>
-                            <td class="text-end"><?= "Rp. " . number_format($sum_spp,2,',','.'); ?></td>
+                            <td class="text-end"><?= "Rp. " . number_format($sum_spp); ?></td>
                         </tr>
                         <tr>
                             <th class="text-start">2. Sumbangan Insidental</th>
-                            <td class="text-end"><?= "Rp. " . number_format($sum_insidental,2,',','.'); ?></td>
+                            <td class="text-end"><?= "Rp. " . number_format($sum_insidental); ?></td>
                         </tr>
                         <tr>
                             <th class="text-start">3. Dana Kegiatan Kesiswaan</th>
-                            <td class="text-end"><?= "Rp. " . number_format($sum_kesiswaan,2,',','.'); ?></td>
+                            <td class="text-end"><?= "Rp. " . number_format($sum_kesiswaan); ?></td>
                         </tr>
                     </tbody>
                 </table>
@@ -184,7 +166,7 @@ $terbilang = terbilang($sum_total);
             <table class="table table-light table-borderless ms-2">
                 <tr>
                     <th class="text-start align-middle" style="margin-top:100px;"><h5><strong>Sejumlah</strong></h5></th>
-                    <td class="text-end" style="padding: 30px; border: 2px solid black;float: left;font-size: 30px"><?= "Rp. " . number_format($sum_total,2,',','.'); ?></td>
+                    <td class="text-end" style="padding: 30px; border: 2px solid black;float: left;font-size: 30px"><?= "Rp. " . number_format($sum_total); ?></td>
                 </tr>
             </table>
         </div>
@@ -224,7 +206,6 @@ $terbilang = terbilang($sum_total);
         var end = url.searchParams.get("end");
         window.print();
         window.onafterprint = function(){
-            alert('Berhasil');
             location.href = "rekap.php?start="+start+"&end="+end;
         }
     </script>

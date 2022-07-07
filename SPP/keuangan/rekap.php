@@ -1,17 +1,17 @@
 <?php 
 
-require_once('db_config.php');
-
-session_start();
-$role = $_SESSION['role'];
-
+require_once('../db/db_config.php');
 $start_date = $_GET['start'];
 $end_date = $_GET['end'];
 
+session_start();
+$nama_asli = $_SESSION['nama_asli'];
+$role = $_SESSION['role'];
+
 if ($start_date == "" || $end_date == ""){
-    $get_sum_nominal = mysqli_query($conn, "SELECT SUM(pendidikan) as sum_spp, SUM(insidental) as sum_insidental, SUM(kesiswaan) as sum_kesiswaan, COUNT(DISTINCT(namapd)) as count_siswa FROM keuangan");
+    $get_sum_nominal = mysqli_query($conn, "SELECT SUM(pendidikan) as sum_spp, SUM(insidental) as sum_insidental, SUM(kesiswaan) as sum_kesiswaan, COUNT(DISTINCT(namapd)) as count_siswa FROM keuangan WHERE (penerima='$nama_asli')");
 } else {
-    $get_sum_nominal = mysqli_query($conn, "SELECT SUM(pendidikan) as sum_spp, SUM(insidental) as sum_insidental, SUM(kesiswaan) as sum_kesiswaan, COUNT(DISTINCT(namapd)) as count_siswa FROM keuangan WHERE tanggal BETWEEN '$start_date' AND '$end_date'");
+    $get_sum_nominal = mysqli_query($conn, "SELECT SUM(pendidikan) as sum_spp, SUM(insidental) as sum_insidental, SUM(kesiswaan) as sum_kesiswaan, COUNT(DISTINCT(namapd)) as count_siswa FROM keuangan WHERE (penerima='$nama_asli') AND (tanggal BETWEEN '$start_date' AND '$end_date')");
 }
 while($row = mysqli_fetch_array($get_sum_nominal))
 {
@@ -70,11 +70,15 @@ $terbilang = terbilang($sum_total);
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
-    <link rel="stylesheet" type="text/css" href="style.css">
-    <title>Laporan Pembayaran</title>
-</head>
-<body>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.3/font/bootstrap-icons.css">
+    <title>Rekapitulasi Pembayaran</title>
     <style>
+        body{
+            background-color: #F4F4FF;
+            background-repeat: no-repeat;
+            background-size: 100% 125%;
+            font-family: "Arial", Times, sans-serif;
+        }
         .fixed_header{
             table-layout: fixed;
             border-collapse: collapse;
@@ -97,11 +101,13 @@ $terbilang = terbilang($sum_total);
             width: 200px;
         }
     </style>
+</head>
+<body>
     <div class="container mt-3">
         <?php if($role == "petugas") {?>
-            <a href="main.php" class="btn btn-secondary mb-2">Kembali</a>
+            <a href="main.php" class="btn btn-secondary mb-2"><i class="bi bi-arrow-left me-2"></i>Kembali</a>
         <?php } else if ($role == "kepsek") {?>
-            <a href="tinjau.php" class="btn btn-secondary mb-2">Kembali</a>
+            <a href="../kepsek/tinjau.php" class="btn btn-secondary mb-2"><i class="bi bi-arrow-left me-2"></i>Kembali</a>
         <?php } ?>
         <div class="row">
             <div class="col-3 mb-2">
@@ -121,11 +127,11 @@ $terbilang = terbilang($sum_total);
                 <div class="card mb-4">
                     <?php if ($end_date == ""){ ?>
                         <div class="card-header">
-                            Laporan Pembayaran Keseluruhan
+                            Rekapitulasi Pembayaran Keseluruhan
                         </div>
                     <?php } else { ?>
                         <div class="card-header">
-                            Laporan Pembayaran Tanggal <strong><?= $start_date ?></strong> sampai <strong><?= $end_date ?></strong>
+                            Rekapitulasi Pembayaran Tanggal <strong><?= $start_date ?></strong> sampai <strong><?= $end_date ?></strong>
                         </div>
                     <?php } ?>
                     <div class="card-body">
@@ -145,15 +151,15 @@ $terbilang = terbilang($sum_total);
                             <tbody>
                             <?php 
                                 if(($_GET['end']) != ""){
-                                    $sql = "SELECT * FROM keuangan WHERE tanggal BETWEEN '$start_date' AND '$end_date' ORDER BY id DESC";		
+                                    $sql = "SELECT * FROM keuangan WHERE (penerima='$nama_asli') AND (tanggal BETWEEN '$start_date' AND '$end_date') ORDER BY id DESC";		
                                     $result = $conn->query($sql);
                                     if (mysqli_num_rows($result) == 0) { ?>
                                         <div class="text-center">
                                             <h3>Tidak ada data.</h3>
                                         </div>
                                     <?php }	
-                                }else{
-                                    $sql = "SELECT * FROM keuangan ORDER BY id DESC LIMIT 50";	
+                                }else {
+                                    $sql = "SELECT * FROM keuangan WHERE penerima='$nama_asli' ORDER BY id DESC LIMIT 50";	
                                     $result = $conn->query($sql); 	
                                 }
                                 $i = 1;
@@ -180,15 +186,15 @@ $terbilang = terbilang($sum_total);
                                         <tbody>
                                             <tr>
                                                 <th class="text-start">Jumlah SPP : </th>
-                                                <td class="text-end"><?= "Rp. " . number_format($sum_spp,2,',','.'); ?></td>
+                                                <td class="text-end"><?= "Rp. " . number_format($sum_spp); ?></td>
                                             </tr>
                                             <tr>
                                                 <th class="text-start">Jumlah Insidental : </th>
-                                                <td class="text-end"><?= "Rp. " . number_format($sum_insidental,2,',','.'); ?></td>
+                                                <td class="text-end"><?= "Rp. " . number_format($sum_insidental); ?></td>
                                             </tr>
                                             <tr>
                                                 <th class="text-start">Jumlah Kesiswaan : </th>
-                                                <td class="text-end"><?= "Rp. " . number_format($sum_kesiswaan,2,',','.'); ?></td>
+                                                <td class="text-end"><?= "Rp. " . number_format($sum_kesiswaan); ?></td>
                                             </tr>
                                         </tbody>
                                     </table>
@@ -196,7 +202,7 @@ $terbilang = terbilang($sum_total);
                                     <table class="table table-borderless" style="width: 80%">
                                         <tr>
                                             <th class="text-start"> <h5>Total : </h5></th>
-                                            <td class="text-end"><h5><?= "Rp. " . number_format($sum_total,2,',','.'); ?></h5></td>
+                                            <td class="text-end"><h5><?= "Rp. " . number_format($sum_total); ?></h5></td>
                                         </tr>
                                     </table>
                                 </div>
@@ -210,7 +216,7 @@ $terbilang = terbilang($sum_total);
                                         </div>
                                     </div>
                                     <div class="download mt-3 text-end">
-                                        <a class="btn btn-success" href="print_rekap.php?start=<?=$_GET['start']?>&end=<?=$_GET['end']?>&from=laporan">Cetak</a>
+                                        <a class="btn btn-success" href="print_rekap.php?start=<?=$_GET['start']?>&end=<?=$_GET['end']?>&from=rekap">Cetak</a>
                                     </div>
                                 </div>
                             </div>
@@ -233,7 +239,7 @@ $terbilang = terbilang($sum_total);
 
         end_date.addEventListener("input", function(){
             var strUser = this.value;
-            var nextURL = 'http://localhost:8080/phphida/SMADA/SPP/rekap.php?start=' + start_date.value + '&end=' + strUser;
+            var nextURL = 'http://localhost:8080/phphida/SMADA/SPP/keuangan/rekap.php?start=' + start_date.value + '&end=' + strUser;
             window.location.replace(nextURL);
         });
         

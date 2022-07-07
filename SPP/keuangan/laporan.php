@@ -1,24 +1,28 @@
 <?php 
 
-require_once('db_config.php');
-$start_date = $_GET['start'];
-$end_date = $_GET['end'];
+require_once('../db/db_config.php');
 
 session_start();
-$nama_asli = $_SESSION['nama_asli'];
 $role = $_SESSION['role'];
 
-if ($start_date == "" || $end_date == ""){
-    $get_sum_nominal = mysqli_query($conn, "SELECT SUM(pendidikan) as sum_spp, SUM(insidental) as sum_insidental, SUM(kesiswaan) as sum_kesiswaan, COUNT(DISTINCT(namapd)) as count_siswa FROM keuangan WHERE (penerima='$nama_asli')");
+$this_kelas = $_GET['kelas'];
+
+$all_kelas = [];
+$get_kelas = mysqli_query($conn, "SELECT DISTINCT(kelas) as kelas FROM rekap ORDER BY kelas");
+while($row = mysqli_fetch_array($get_kelas))
+{
+    $all_kelas[] = $row['kelas'];
+}
+if ($this_kelas == "Semua"){
+    $get_sum_nominal = mysqli_query($conn, "SELECT *,SUM(insidental) as sum_insidental, SUM(kesiswaan) as sum_kesiswaan, SUM(pendidikan) as sum_pendidikan FROM rekap");
 } else {
-    $get_sum_nominal = mysqli_query($conn, "SELECT SUM(pendidikan) as sum_spp, SUM(insidental) as sum_insidental, SUM(kesiswaan) as sum_kesiswaan, COUNT(DISTINCT(namapd)) as count_siswa FROM keuangan WHERE (penerima='$nama_asli') AND (tanggal BETWEEN '$start_date' AND '$end_date')");
+    $get_sum_nominal = mysqli_query($conn, "SELECT *,SUM(insidental) as sum_insidental, SUM(kesiswaan) as sum_kesiswaan, SUM(pendidikan) as sum_pendidikan FROM rekap WHERE kelas='$this_kelas' ORDER BY nama_pd");
 }
 while($row = mysqli_fetch_array($get_sum_nominal))
 {
-    $sum_spp = $row['sum_spp'];
+    $sum_spp = $row['sum_pendidikan'];
     $sum_insidental = $row['sum_insidental'];
     $sum_kesiswaan = $row['sum_kesiswaan'];
-    $count_siswa = $row['count_siswa'];
 }
 $sum_total = $sum_spp + $sum_insidental + $sum_kesiswaan;
 
@@ -70,11 +74,15 @@ $terbilang = terbilang($sum_total);
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
-    <link rel="stylesheet" type="text/css" href="style.css">
-    <title>Rekapitulasi Pembayaran</title>
-</head>
-<body>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.3/font/bootstrap-icons.css">
+    <title>Laporan Keuangan</title>
     <style>
+        body{
+            background-color: #F4F4FF;
+            background-repeat: no-repeat;
+            background-size: 100% 125%;
+            font-family: "Arial", Times, sans-serif;
+        }
         .fixed_header{
             table-layout: fixed;
             border-collapse: collapse;
@@ -97,55 +105,54 @@ $terbilang = terbilang($sum_total);
             width: 200px;
         }
     </style>
+</head>
+<body>
     <div class="container mt-3">
         <?php if($role == "petugas") {?>
-            <a href="main.php" class="btn btn-secondary mb-2">Kembali</a>
+            <a href="main.php" class="btn btn-secondary mb-2"><i class="bi bi-arrow-left me-2"></i>Kembali</a>
         <?php } else if ($role == "kepsek") {?>
-            <a href="tinjau.php" class="btn btn-secondary mb-2">Kembali</a>
+            <a href="../kepsek/tinjau.php" class="btn btn-secondary mb-2"><i class="bi bi-arrow-left me-2"></i>Kembali</a>
         <?php } ?>
         <div class="row">
-            <div class="col-3 mb-2">
-                <label for="kelas"><strong>Tanggal : </strong></label>
-                <input type="date" name="start_date" id="start_date" value="<?= $start_date ?>">
-            </div>
-            <div class="col-3 mb-2">
-                <label for="kelas"><strong>Sampai : </strong></label>
-                <input type="date" name="end_date" id="end_date" value="<?= $end_date ?>">
-            </div>
-            <div class="col-6 mb-2 text-end">
-                <label for="kelas">Jumlah peserta didik yang melakukan pembayaran : <strong><?= $count_siswa ?></strong></label>
+            <div class="col-6 mb-2">
+                <label for="kelas"><strong>Kelas : </strong></label>
+                <select class="form-select w-25" id="kelas" name="kelas">
+                    <option value="Semua">Semua</option>
+                    <option selected hidden><?= $this_kelas; ?></option>
+                    <?php foreach($all_kelas as $kelas) { ?>
+                        <option value="<?= $kelas; ?>"><?= $kelas; ?></option>
+                    <?php }; ?>
+                </select>
             </div>
         </div>
         <div class="row">
             <div class="col-xl-12">
                 <div class="card mb-4">
-                    <?php if ($end_date == ""){ ?>
+                    <?php if ($kelas == "Semua"){ ?>
                         <div class="card-header">
-                            Rekapitulasi Pembayaran Keseluruhan
+                            Laporan Administrasi Keuangan (Keseluruhan)
                         </div>
                     <?php } else { ?>
                         <div class="card-header">
-                            Rekapitulasi Pembayaran Tanggal <strong><?= $start_date ?></strong> sampai <strong><?= $end_date ?></strong>
+                            Laporan Administrasi Keuangan <strong><?= $this_kelas ?></strong>
                         </div>
                     <?php } ?>
                     <div class="card-body">
                         <table class="fixed_header table table-bordered text-center">
                             <thead>
                                 <tr>
-                                <th scope="col">Tanggal</th>
                                 <th scope="col">NIPD</th>
                                 <th scope="col">Nama Siswa</th>
                                 <th scope="col">Kelas</th>
                                 <th scope="col">Insidental</th>
                                 <th scope="col">Kesiswaan</th>
                                 <th scope="col">Pendidikan</th>
-                                <th scope="col">Penerima</th>
                                 </tr>
                             </thead>
                             <tbody>
                             <?php 
-                                if(($_GET['end']) != ""){
-                                    $sql = "SELECT * FROM keuangan WHERE (penerima='$nama_asli') AND (tanggal BETWEEN '$start_date' AND '$end_date') ORDER BY id DESC";		
+                                if(($_GET['kelas']) != "Semua"){
+                                    $sql = "SELECT * FROM rekap WHERE kelas='$this_kelas' ORDER BY nama_pd ASC";		
                                     $result = $conn->query($sql);
                                     if (mysqli_num_rows($result) == 0) { ?>
                                         <div class="text-center">
@@ -153,20 +160,18 @@ $terbilang = terbilang($sum_total);
                                         </div>
                                     <?php }	
                                 }else{
-                                    $sql = "SELECT * FROM keuangan WHERE penerima='$nama_asli' ORDER BY id DESC LIMIT 50";	
+                                    $sql = "SELECT * FROM rekap ORDER BY nama_pd ASC";	
                                     $result = $conn->query($sql); 	
                                 }
                                 $i = 1;
                                 while($data = $result->fetch_assoc()){ ?>
                                 <tr>
-                                    <td><?= $data['tanggal']; ?></td>
-                                    <td><?= $data['nipd']; ?></td>
-                                    <td><?= $data['namapd']; ?></td>
+                                    <td><?= $data['nis']; ?></td>
+                                    <td><?= $data['nama_pd']; ?></td>
                                     <td><?= $data['kelas']; ?></td>
                                     <td><?= $data['insidental']; ?></td>
                                     <td><?= $data['kesiswaan']; ?></td>
                                     <td><?= $data['pendidikan']; ?></td>
-                                    <td><?= $data['penerima']; ?></td>
                                     <?php $i++; ?>
                                 </tr>
                                 <?php } ?>
@@ -180,15 +185,15 @@ $terbilang = terbilang($sum_total);
                                         <tbody>
                                             <tr>
                                                 <th class="text-start">Jumlah SPP : </th>
-                                                <td class="text-end"><?= "Rp. " . number_format($sum_spp,2,',','.'); ?></td>
+                                                <td class="text-end"><?= "Rp. " . number_format($sum_spp); ?></td>
                                             </tr>
                                             <tr>
                                                 <th class="text-start">Jumlah Insidental : </th>
-                                                <td class="text-end"><?= "Rp. " . number_format($sum_insidental,2,',','.'); ?></td>
+                                                <td class="text-end"><?= "Rp. " . number_format($sum_insidental); ?></td>
                                             </tr>
                                             <tr>
                                                 <th class="text-start">Jumlah Kesiswaan : </th>
-                                                <td class="text-end"><?= "Rp. " . number_format($sum_kesiswaan,2,',','.'); ?></td>
+                                                <td class="text-end"><?= "Rp. " . number_format($sum_kesiswaan); ?></td>
                                             </tr>
                                         </tbody>
                                     </table>
@@ -196,7 +201,7 @@ $terbilang = terbilang($sum_total);
                                     <table class="table table-borderless" style="width: 80%">
                                         <tr>
                                             <th class="text-start"> <h5>Total : </h5></th>
-                                            <td class="text-end"><h5><?= "Rp. " . number_format($sum_total,2,',','.'); ?></h5></td>
+                                            <td class="text-end"><h5><?= "Rp. " . number_format($sum_total); ?></h5></td>
                                         </tr>
                                     </table>
                                 </div>
@@ -210,7 +215,7 @@ $terbilang = terbilang($sum_total);
                                         </div>
                                     </div>
                                     <div class="download mt-3 text-end">
-                                        <a class="btn btn-success" href="print_rekap.php?start=<?=$_GET['start']?>&end=<?=$_GET['end']?>&from=rekap">Cetak</a>
+                                        <a class="btn btn-success" href="print_laporan.php?kelas=<?=$this_kelas?>">Cetak</a>
                                     </div>
                                 </div>
                             </div>
@@ -228,12 +233,11 @@ $terbilang = terbilang($sum_total);
         crossorigin="anonymous">
     </script>
     <script>
-        var start_date = document.getElementById('start_date');
-        var end_date = document.getElementById('end_date');
+        var kelas = document.getElementById('kelas');
 
-        end_date.addEventListener("input", function(){
+        kelas.addEventListener("input", function(){
             var strUser = this.value;
-            var nextURL = 'http://localhost:8080/phphida/SMADA/SPP/rekap.php?start=' + start_date.value + '&end=' + strUser;
+            var nextURL = 'http://localhost:8080/phphida/SMADA/SPP/keuangan/laporan.php?kelas=' + strUser;
             window.location.replace(nextURL);
         });
         

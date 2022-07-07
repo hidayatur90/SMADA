@@ -1,6 +1,6 @@
 <?php 
 
-require_once('db_config.php');
+require_once('../db/db_config.php');
 
 $date = date('d-m-Y');
 
@@ -40,8 +40,9 @@ if(isset($_POST['submit'])) {
     $result = mysqli_query($conn, "UPDATE rekap SET insidental=$insidental_rekap,kesiswaan=$kesiswaan_rekap,pendidikan=$pendidikan_rekap WHERE nis=$nipd");
     echo "
     <script>
-        alert('Data Berhasil ditambahkan');
-        document.location.href = 'bukti_pembayaran.php?nipd=". $nipd ."';
+        if (confirm('Data berhasil ditambahkan, Cetak bukti?')) {
+            document.location.href = 'bukti_pembayaran.php?nipd=". $nipd ."';
+        }
     </script>";
 }
 ?>
@@ -53,15 +54,23 @@ if(isset($_POST['submit'])) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
-    <link rel="stylesheet" type="text/css" href="style.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.3/font/bootstrap-icons.css">
     <title>Pembayaran SPP</title>
+    <style>
+        body{
+            background-color: #F4F4FF;
+            background-repeat: no-repeat;
+            background-size: 100% 125%;
+            font-family: "Arial", Times, sans-serif;
+        }
+    </style>
 </head>
 <body>
     <div class="container mt-3">
-        <a href="main.php" class="btn btn-secondary mb-2">Kembali</a>
+        <a href="main.php" class="btn btn-secondary mb-2"><i class="bi bi-arrow-left me-2"></i>Kembali</a>
         <form action="detail_pembayaran.php" method="GET">
             <div class="input-group my-3 col-12 col-xxl-3 col-xl-3 col-lg-3 col-md-4 col-sm-10">
-                <input type="number" name="cari" class="form-control ms-3" placeholder="Cari NIPD Siswa">
+                <input type="number" name="cari" class="form-control" placeholder="Cari NIPD Siswa">
                 <input class="btn btn-primary" type="submit" value="Cari">
             </div>
         </form>
@@ -250,6 +259,7 @@ if(isset($_POST['submit'])) {
             </div>
         </div>
     </div>
+    </div>
 
     <!-- Bootstrap -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
@@ -268,19 +278,34 @@ if(isset($_POST['submit'])) {
         var nom_spp_2 = document.getElementById('nominal_1');
         var nom_insidental_2 = document.getElementById('nominal_2');
         var nom_kesiswaan_2 = document.getElementById('nominal_3');
-                                        
+
         month_spp.addEventListener("input", function(){
-            nom_spp.value = this.value * 60000;
-            nom_spp_2.value = this.value * 60000;
+            nom_spp.value = this.value * 150000;
+            nom_spp_2.value = this.value * 150000;
             nom_total.value = nom_spp.value;
+            if(this.value == 0){
+                btn_submit.setAttribute("disabled", "true");
+            } else if(this.value > 0) {
+                btn_submit.removeAttribute("disabled");
+            }
         });
 
         nom_insidental.addEventListener("input", function(){
             nom_insidental_2.value = this.value;
+            if(this.value == 0){
+                btn_submit.setAttribute("disabled", "true");
+            } else if(this.value > 0) {
+                btn_submit.removeAttribute("disabled");
+            }
         });
 
         nom_kesiswaan.addEventListener("input", function(){
             nom_kesiswaan_2.value = this.value;
+            if(this.value == 0){
+                btn_submit.setAttribute("disabled", "true");
+            } else if(this.value > 0) {
+                btn_submit.removeAttribute("disabled");
+            }
         });
 
         function findTotal(){
@@ -292,16 +317,14 @@ if(isset($_POST['submit'])) {
             }
             nom_total.value = tot;
         }
-
+        
         $(function() {
             $('[id="pendidikan"]').change(function() {
                 if ($(this).is(':checked')) {
                     month_spp.removeAttribute("disabled");
-                    btn_submit.removeAttribute("disabled");
                 } else {
                     $(nom_total).prop('value', nom_total.value - nom_spp.value);
                     $(month_spp).prop('disabled', true);
-                    $(btn_submit).prop('disabled', true);
                     $(month_spp).prop('value', " ");
                     $(nom_spp).prop('value', " ");
                 } 
@@ -311,11 +334,9 @@ if(isset($_POST['submit'])) {
             $('[id="insidental"]').change(function() {
                 if ($(this).is(':checked')) {
                     nom_insidental.removeAttribute("disabled");
-                    btn_submit.removeAttribute("disabled");
                 } else {
                     $(nom_total).prop('value', nom_total.value - nom_insidental.value);
                     $(nom_insidental).prop('disabled', true);
-                    $(btn_submit).prop('disabled', true);
                     $(nom_insidental).prop('value', " ");
                 } 
             });
@@ -324,16 +345,13 @@ if(isset($_POST['submit'])) {
             $('[id="kesiswaan"]').change(function() {
                 if ($(this).is(':checked')) {
                     nom_kesiswaan.removeAttribute("disabled");
-                    btn_submit.removeAttribute("disabled");
                 } else {
                     $(nom_total).prop('value', nom_total.value - nom_kesiswaan.value);
                     $(nom_kesiswaan).prop('disabled', true);
-                    $(btn_submit).prop('disabled', true);
                     $(nom_kesiswaan).prop('value', " ");
                 } 
             });
         });
-
     </script>
 </body>
 </html>

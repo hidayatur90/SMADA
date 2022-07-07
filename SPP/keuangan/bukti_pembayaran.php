@@ -1,6 +1,6 @@
 <?php
 
-require_once('db_config.php');
+require_once('../db/db_config.php');
 
 $nipd = $_GET['nipd'];
 
@@ -74,7 +74,6 @@ $terbilang = terbilang($sum_total);
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <!-- Jquery CDN -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-    <!-- <link rel="stylesheet" type="text/css" href="print.css" media="print" /> -->
     <title>Cetak Bukti Pembayaran</title>
 </head>
 <body>
@@ -293,7 +292,6 @@ $terbilang = terbilang($sum_total);
         var nipd = url.searchParams.get("nipd");
         window.print();
         window.onafterprint = function(){
-            alert('Berhasil');
             location.href = "detail_pembayaran.php?cari="+nipd;
         }
     </script>

@@ -1,6 +1,6 @@
 <?php 
 
-require_once('db_config.php');
+require_once('../db/db_config.php');
 
 $date = date('Y-m-d');
 
@@ -41,15 +41,23 @@ if(isset($_POST['submit'])) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
-    <link rel="stylesheet" type="text/css" href="style.css">
-    <title>Pembayaran SPP</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.3/font/bootstrap-icons.css">
+    <title>Pembatalan Pembayaran</title>
+    <style>
+        body{
+            background-color: #F4F4FF;
+            background-repeat: no-repeat;
+            background-size: 100% 125%;
+            font-family: "Arial", Times, sans-serif;
+        }
+    </style>
 </head>
 <body>
     <div class="container mt-3">
-        <a href="main.php" class="btn btn-secondary mb-2">Kembali</a>
+        <a href="main.php" class="btn btn-secondary mb-2"><i class="bi bi-arrow-left me-2"></i>Kembali</a>
         <form action="pembatalan.php" method="GET">
             <div class="input-group my-3 col-12 col-xxl-3 col-xl-3 col-lg-3 col-md-4 col-sm-10">
-                <input type="number" name="cari" class="form-control ms-3" placeholder="Cari NIPD Siswa">
+                <input type="number" name="cari" class="form-control" placeholder="Cari NIPD Siswa">
                 <input class="btn btn-primary" type="submit" value="Cari">
             </div>
         </form>
@@ -99,7 +107,7 @@ if(isset($_POST['submit'])) {
                                     <td><?= $data['kesiswaan']; ?></td>
                                     <td><?= $data['pendidikan']; ?></td>
                                     <td>
-                                        <a href="delete.php?id=<?=$data['id']?>" class="btn btn-danger mx-3" onclick="return confirm('Yakin ingin menghapus data ini?')">Batalkan</a>
+                                        <a href="delete.php?id=<?=$data['id']?>" class="btn btn-danger mx-3" onclick="return confirm('Yakin ingin membatalkan pembayaran ini?')">Batalkan</a>
                                     </td>
                                     <?php $i++; ?>
                                 </tr>
