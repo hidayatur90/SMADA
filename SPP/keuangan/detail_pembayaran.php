@@ -79,19 +79,19 @@ if(isset($_POST['submit'])) {
                 $cari = $_GET['cari'];
             }
         ?>
-        <div class="row">
-            <div class="col-xl-12">
-                <div class="card mb-4">
-                    <div class="card-header">
-                        <strong>Data Pembayaran SPP</strong>
-                    </div>
-                    <div class="card-body">
-                        <table class="table table-bordered text-center">
-                            <tbody>
-                                <?php 
-                                if(isset($_GET['cari'])){
-                                    $cari = $_GET['cari'];
-                                    if ($cari == ""){ ?>
+        <?php 
+        if(isset($_GET['cari'])){
+            $cari = $_GET['cari'];
+            if ($cari == ""){ ?>
+                <div class="row">
+                    <div class="col-12">
+                        <div class="card mb-4">
+                            <div class="card-header">
+                                <strong>Data Pembayaran SPP</strong>
+                            </div>
+                            <div class="card-body">
+                                <table class="table table-bordered text-center">
+                                    <tbody>
                                         <table class="table table-borderless" style="width:25%">
                                             <tr>
                                                 <th>NIPD</th>
@@ -123,16 +123,27 @@ if(isset($_POST['submit'])) {
                                                 </tr>
                                             </tbody>
                                         </table>
-                                    <?php } else {
-                                        $sql = "SELECT *, SUM(pendidikan) as pendidikan, SUM(insidental) as insidental, SUM(kesiswaan) as kesiswaan FROM keuangan WHERE nipd = $cari GROUP BY namapd";		
-                                        $result = $conn->query($sql);
-                                        $i = 1;
-                                        if (mysqli_num_rows($result) > 0){ 
-                                        while($data = $result->fetch_assoc()){ ?>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <?php } else {
+                    $sql = "SELECT *, SUM(pendidikan) as pendidikan, SUM(insidental) as insidental, SUM(kesiswaan) as kesiswaan FROM keuangan WHERE nipd = $cari GROUP BY namapd";		
+                    $result = $conn->query($sql);
+                    $i = 1;
+                    if (mysqli_num_rows($result) > 0){ 
+                    while($data = $result->fetch_assoc()){ ?>
+                    <div class="row">
+                        <div class="col-6">
+                            <div class="card mb-4">
+                                <div class="card-header">
+                                    <strong>Data Pembayaran SPP</strong>
+                                </div>
+                                <div class="card-body">
+                                    <table class="table table-bordered text-center">
                                         <table class="table table-borderless" style="width:80%">
-                                            <div class="float-end">
-                                                <button class="btn btn-success me-3 w-100 " data-bs-toggle="modal" data-bs-target="#rekapModal">Bayar</button>
-                                            </div>
                                             <tr>
                                                 <th>NIPD</th>
                                                 <td>: <?= $data['nipd']; ?></td>
@@ -165,100 +176,96 @@ if(isset($_POST['submit'])) {
                                                 <?php } ?>
                                             </tbody>
                                         </table>
-                                        <?php } else { ?>
-                                            <div class="text-center">
-                                                <h3>Data Siswa Tidak ditemukan.</h3>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="card mb-4">
+                                <div class="card-header">
+                                    <strong>Data Pembayaran SPP</strong>
+                                </div>
+                            <div class="card-body">
+                                <p><strong>Tanggal : </strong><?= $date; ?></p>
+                                <form method="post" action="detail_pembayaran.php?cari=<?= $nipd_siswa ?>">
+                                    <!-- Pendidikan -->
+                                    <div class="row mb-3">
+                                        <div class="col-6">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" value="" id="pendidikan" name="pendidikan">
+                                                <label class="form-check-label" for="pendidikan">
+                                                    <strong>Dana Pendidikan</strong> 
+                                                </label>
+                                                <!-- Nominal -->
+                                                <input type="number" class="form-control" min="0" name="nominal" id="nominal_pendidikan" onblur="findTotal()" placeholder="Nominal" autocomplete="off" required disabled oninvalid="this.setCustomValidity('Wajib diisi')" oninput="this.setCustomValidity('')"/>
+                                                <input type="number" class="form-control" min="0" name="nominal_pendidikan" id="nominal_1" onblur="findTotal()" value="0" required hidden/>
                                             </div>
-                                        <?php } ?>
-                                <?php }} ?>
-                            </tbody>
-                        </table>
-                    </div>
+                                        </div>
+                                        <!-- Jumlah -->
+                                        <div class="col-6">
+                                            <label class="form-check-label" for="jumlah_spp">
+                                                <strong>Jumlah</strong> 
+                                            </label>
+                                            <input type="number" class="form-control" min="0" max="12" name="jumlah_spp" id="jumlah_spp" placeholder="Jumlah" autocomplete="off" required disabled oninvalid="this.setCustomValidity('Jumlah harus angka')" oninput="this.setCustomValidity('')"/>
+                                        </div>
+                                    </div>
+                                    <!-- Insidental -->
+                                    <div class="row mb-3">
+                                        <div class="col">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" value="" id="insidental" name="insidental">
+                                                <label class="form-check-label" for="insidental">
+                                                    <strong>Insidental</strong> 
+                                                </label>
+                                                <!-- Nominal -->
+                                                <input type="number" class="form-control" min="0" name="nominal" id="nominal_insidental" onblur="findTotal()" placeholder="Nominal" autocomplete="off" required disabled oninvalid="this.setCustomValidity('Wajib diisi')" oninput="this.setCustomValidity('')"/>
+                                                <input type="number" class="form-control" min="0" name="nominal_insidental" id="nominal_2" onblur="findTotal()" value="0" required hidden/>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!-- Dana Kegiatan Kesiswaan -->
+                                    <div class="row mb-3">
+                                        <div class="col">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" value="" id="kesiswaan" name="kesiswaan">
+                                                <label class="form-check-label" for="kesiswaan">
+                                                    <strong>Dana Kegiatan Kesiswaan</strong> 
+                                                </label>
+                                                <!-- Nominal -->
+                                                <input type="number" class="form-control" min="0" name="nominal" id="nominal_kesiswaan" onblur="findTotal()" placeholder="Nominal" autocomplete="off" required disabled oninvalid="this.setCustomValidity('Wajib diisi')" oninput="this.setCustomValidity('')"/>
+                                                <input type="number" class="form-control" min="0" name="nominal_kesiswaan" id="nominal_3" onblur="findTotal()" value="0" required hidden/>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!-- Total -->
+                                    <div class="row mb-3">
+                                        <div class="col">
+                                            <label class="form-check-label" for="flexCheckDefault">
+                                                <strong>Total</strong> 
+                                            </label>
+                                            <!-- Nominal -->
+                                            <input type="number" class="form-control" min="0" name="nominal_total" id="nominal_total" placeholder="Nominal" autocomplete="off" value="0" required disabled oninvalid="this.setCustomValidity('Wajib diisi')" oninput="this.setCustomValidity('')"/>
+                                        </div>
+                                    </div>
+
+                                    <div class="row mb-3 justify-content-end my-2">
+                                        <div class="col-sm-8 col-md-9 col-xl-12" style="text-align:end;">
+                                            <input type="submit" name="submit" id="submit" class="create btn btn-success mx-3" disabled value="Tambah">
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>        
+                        <?php } else { ?>
+                            <div class="text-center">
+                                <h3>Data Siswa Tidak ditemukan.</h3>
+                            </div>
+                        <?php } ?>
+                <?php }} ?>
                 </div>
             </div>
         </div>
-    </div>
-    <!-- Modal -->
-    <div class="modal fade" id="rekapModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-        <div class="modal-header">
-            <h5 class="modal-title" id="exampleModalLabel">Tambah Pembayaran</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-body">
-            <div class="card-body">
-                <p><strong>Tanggal : </strong><?= $date; ?></p>
-                <form method="post" action="detail_pembayaran.php?cari=<?= $nipd_siswa ?>">
-                    <!-- Pendidikan -->
-                    <div class="row mb-3">
-                        <div class="col-6">
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" value="" id="pendidikan" name="pendidikan">
-                                <label class="form-check-label" for="pendidikan">
-                                    <strong>Dana Pendidikan</strong> 
-                                </label>
-                                <!-- Nominal -->
-                                <input type="number" class="form-control" min="0" name="nominal" id="nominal_pendidikan" onblur="findTotal()" placeholder="Nominal" autocomplete="off" required disabled oninvalid="this.setCustomValidity('Wajib diisi')" oninput="this.setCustomValidity('')"/>
-                                <input type="number" class="form-control" min="0" name="nominal_pendidikan" id="nominal_1" onblur="findTotal()" value="0" required hidden/>
-                            </div>
-                        </div>
-                        <!-- Jumlah -->
-                        <div class="col-6">
-                            <label class="form-check-label" for="jumlah_spp">
-                                <strong>Jumlah</strong> 
-                            </label>
-                            <input type="number" class="form-control" min="0" max="12" name="jumlah_spp" id="jumlah_spp" placeholder="Jumlah" autocomplete="off" required disabled oninvalid="this.setCustomValidity('Jumlah harus angka')" oninput="this.setCustomValidity('')"/>
-                        </div>
-                    </div>
-                    <!-- Insidental -->
-                    <div class="row mb-3">
-                        <div class="col">
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" value="" id="insidental" name="insidental">
-                                <label class="form-check-label" for="insidental">
-                                    <strong>Insidental</strong> 
-                                </label>
-                                <!-- Nominal -->
-                                <input type="number" class="form-control" min="0" name="nominal" id="nominal_insidental" onblur="findTotal()" placeholder="Nominal" autocomplete="off" required disabled oninvalid="this.setCustomValidity('Wajib diisi')" oninput="this.setCustomValidity('')"/>
-                                <input type="number" class="form-control" min="0" name="nominal_insidental" id="nominal_2" onblur="findTotal()" value="0" required hidden/>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- Dana Kegiatan Kesiswaan -->
-                    <div class="row mb-3">
-                        <div class="col">
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" value="" id="kesiswaan" name="kesiswaan">
-                                <label class="form-check-label" for="kesiswaan">
-                                    <strong>Dana Kegiatan Kesiswaan</strong> 
-                                </label>
-                                <!-- Nominal -->
-                                <input type="number" class="form-control" min="0" name="nominal" id="nominal_kesiswaan" onblur="findTotal()" placeholder="Nominal" autocomplete="off" required disabled oninvalid="this.setCustomValidity('Wajib diisi')" oninput="this.setCustomValidity('')"/>
-                                <input type="number" class="form-control" min="0" name="nominal_kesiswaan" id="nominal_3" onblur="findTotal()" value="0" required hidden/>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- Total -->
-                    <div class="row mb-3">
-                        <div class="col">
-                            <label class="form-check-label" for="flexCheckDefault">
-                                <strong>Total</strong> 
-                            </label>
-                            <!-- Nominal -->
-                            <input type="number" class="form-control" min="0" name="nominal_total" id="nominal_total" placeholder="Nominal" autocomplete="off" value="0" required disabled oninvalid="this.setCustomValidity('Wajib diisi')" oninput="this.setCustomValidity('')"/>
-                        </div>
-                    </div>
-
-                    <div class="row mb-3 justify-content-end my-2">
-                        <div class="col-sm-8 col-md-9 col-xl-12" style="text-align:end;">
-                            <input type="submit" name="submit" id="submit" class="create btn btn-success mx-3" disabled value="Tambah">
-                        </div>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
     </div>
 
     <!-- Bootstrap -->

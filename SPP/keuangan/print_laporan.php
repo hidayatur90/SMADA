@@ -69,17 +69,17 @@ $sum_total = $sum_spp + $sum_insidental + $sum_kesiswaan;
             border-top: solid 1px #000 !important;
         }
         @page {
-            size: A4;
+            size: A3;
             margin: 0;
         }
         @media print {
-            /* @page{
+            @page{
                 size: landscape;
-            } */
+            }
             html, body {
                 margin-top: 10px;
-                width: 300mm;
-                height: 140mm;
+                width: 420mm;
+                height: 297mm;
             }
         }
         .guru {
@@ -102,12 +102,18 @@ $sum_total = $sum_spp + $sum_insidental + $sum_kesiswaan;
                     <th scope="col">Kelas</th>
                     <th scope="col">NIPD</th>
                     <th scope="col">Nama Peserta Didik</th>
-                    <th scope="col">I</th>
-                    <th scope="col">II</th>
-                    <th scope="col">III</th>
-                    <th scope="col">IV</th>
-                    <th scope="col">V</th>
-                    <th scope="col">VI</th>
+                    <th scope="col">Jul</th>
+                    <th scope="col">Agt</th>
+                    <th scope="col">Sep</th>
+                    <th scope="col">Okt</th>
+                    <th scope="col">Nov</th>
+                    <th scope="col">Des</th>
+                    <th scope="col">Jan</th>
+                    <th scope="col">Feb</th>
+                    <th scope="col">Mar</th>
+                    <th scope="col">Apr</th>
+                    <th scope="col">Mei</th>
+                    <th scope="col">Jun</th>
                     <th scope="col">Insidental</th>
                     <th scope="col">Kesiswaan</th>
                     </tr>
@@ -119,9 +125,12 @@ $sum_total = $sum_spp + $sum_insidental + $sum_kesiswaan;
                     $i = 1;
                     $x = 0;
                     $y = 0;
+                    $tot = 0;
                     while($data = $result->fetch_assoc()){ 
                     $count_pendidikan = $data['pendidikan']/150000;
-                    $count = $count_pendidikan >= 6 ? 6 : $count_pendidikan;
+                    // $count = $count_pendidikan;
+                    $count = $count_pendidikan >= 12 ? 12 : $count_pendidikan;
+                    $tot += $count;
                     $j = 1;?>
                     <tr>
                         <td class="text-start"><?= $data['kelas']; ?></td>
@@ -130,8 +139,8 @@ $sum_total = $sum_spp + $sum_insidental + $sum_kesiswaan;
                         <?php while($j <= $count) { ?>
                             <td class="text-end"><?= number_format(150000) ?></td>
                         <?php $j++; }
-                            if(($j > $count) && ($count < 6)){ 
-                                $k = 6 - $count;
+                            if(($j > $count) && ($count < 12)){ 
+                                $k = 12 - $count;
                                 while ($k > 0) {?>
                                     <td class="text-end">0</td>
                                 <?php $k--;?>
@@ -146,10 +155,9 @@ $sum_total = $sum_spp + $sum_insidental + $sum_kesiswaan;
                             <td style='border:none;'></td>
                         <?php $td++; } ?>
                         <?php 
-                            $tot = 3*($i - 1) - $y; 
                             $sum_tot = $tot * 150000;
                         ?>
-                        <td colspan="6" class="text-center"><strong><?= number_format($sum_spp) ?></strong></td>
+                        <td colspan="12" class="text-center"><strong><?= number_format($sum_tot) ?></strong></td>
                         <td class="text-end"><strong><?= number_format($sum_insidental) ?></strong></td>
                         <td class="text-end"><strong><?= number_format($sum_kesiswaan) ?></strong></td>
                     </tr>
