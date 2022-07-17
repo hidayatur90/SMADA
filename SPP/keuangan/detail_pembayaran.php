@@ -26,14 +26,6 @@ if(isset($_POST['submit'])) {
     $penerima = $nama_asli;
             
     $result = mysqli_query($conn, "INSERT INTO keuangan(tanggal,nipd,namapd,kelas,insidental,kesiswaan,pendidikan,penerima) VALUES('$tanggal','$nipd','$namapd','$kelas',$insidental,$kesiswaan,$pendidikan,'$penerima')");
-    
-    $get_cicilan = mysqli_query($conn, "SELECT arr_cicilan as arr_cicilan FROM insidental WHERE nipd=$nipd_siswa");
-    while($row = mysqli_fetch_array($get_cicilan))
-    {
-        $arr_cicilan = $row['arr_cicilan'];
-        $arr_cicilan = strlen($arr_cicilan) > 0 ? $row['arr_cicilan'].",".(string)$insidental : (string)$insidental;
-        $result = mysqli_query($conn, "UPDATE insidental SET nipd=$nipd,nama='$namapd',kelas='$kelas',arr_cicilan='$arr_cicilan' WHERE nipd=$nipd_siswa");
-    }
 
     $get_data_rekap = mysqli_query($conn, "SELECT * FROM rekap WHERE nis=$nipd_siswa");
     while($row = mysqli_fetch_array($get_data_rekap))
@@ -46,6 +38,21 @@ if(isset($_POST['submit'])) {
     $kesiswaan_rekap = $kesiswaan_2 + $kesiswaan;
     $pendidikan_rekap = $pendidikan_2 + $pendidikan;
     $result = mysqli_query($conn, "UPDATE rekap SET insidental=$insidental_rekap,kesiswaan=$kesiswaan_rekap,pendidikan=$pendidikan_rekap WHERE nis=$nipd");
+    
+    if(($insidental != 0) || ($kesiswaan != 0)) {
+        $get_cicilan = mysqli_query($conn, "SELECT cicilan_insidental, cicilan_kesiswaan FROM insidental WHERE nipd=$nipd_siswa");
+        while($row = mysqli_fetch_array($get_cicilan))
+        {
+            $cicilan_insidental = $row['cicilan_insidental'];
+            $cicilan_insidental = strlen($cicilan_insidental) > 0 ? $row['cicilan_insidental'].",".(string)$insidental : (string)$insidental;
+            $result = mysqli_query($conn, "UPDATE insidental SET nipd=$nipd,nama='$namapd',kelas='$kelas',cicilan_insidental='$cicilan_insidental' WHERE nipd=$nipd_siswa");
+
+            $cicilan_kesiswaan = $row['cicilan_kesiswaan'];
+            $cicilan_kesiswaan = strlen($cicilan_kesiswaan) > 0 ? $row['cicilan_kesiswaan'].",".(string)$kesiswaan : (string)$kesiswaan;
+            $result = mysqli_query($conn, "UPDATE insidental SET nipd=$nipd,nama='$namapd',kelas='$kelas',cicilan_kesiswaan='$cicilan_kesiswaan' WHERE nipd=$nipd_siswa");
+        }
+    }
+
     echo "
     <script>
         if (confirm('Data berhasil ditambahkan, Cetak bukti?')) {

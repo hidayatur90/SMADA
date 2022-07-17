@@ -5,24 +5,24 @@ require_once('../db/db_config.php');
 $this_kelas = $_GET['kelas'];
 $this_date = date('d-M-Y');
 $all_kelas = [];
-$sum_insidental = [];
+$sum_kesiswaan = [];
 if ($this_kelas == "Semua"){
     $get_kelas = mysqli_query($conn, "SELECT DISTINCT(kelas) as kelas FROM rekap ORDER BY kelas");
     while($row = mysqli_fetch_array($get_kelas)) {
         $all_kelas[] = $row['kelas'];
     }
     foreach ($all_kelas as $kelas) {
-        $get_sum_nominal = mysqli_query($conn, "SELECT *,SUM(insidental) as sum_insidental FROM rekap WHERE kelas='$kelas' ORDER BY kelas");
+        $get_sum_nominal = mysqli_query($conn, "SELECT *,SUM(kesiswaan) as sum_kesiswaan FROM rekap WHERE kelas='$kelas' ORDER BY kelas");
         while($row = mysqli_fetch_array($get_sum_nominal)) {
-            $sum_insidental[] = $row['sum_insidental'];
+            $sum_kesiswaan[] = $row['sum_kesiswaan'];
         }
     }
 
 } else {
     $all_kelas[] = $this_kelas;
-    $get_sum_nominal = mysqli_query($conn, "SELECT SUM(insidental) as sum_insidental FROM rekap WHERE kelas='$this_kelas'");
+    $get_sum_nominal = mysqli_query($conn, "SELECT SUM(kesiswaan) as sum_kesiswaan FROM rekap WHERE kelas='$this_kelas'");
     while($row = mysqli_fetch_array($get_sum_nominal)) {
-        $sum_insidental[] = $row['sum_insidental'];
+        $sum_kesiswaan[] = $row['sum_kesiswaan'];
     }
 }
 
@@ -38,7 +38,7 @@ if ($this_kelas == "Semua"){
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <!-- Jquery CDN -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-    <title>Cetak Cicilan Insidental</title>
+    <title>Cetak Cicilan Kesiswaan</title>
 </head>
 <body>
     <style>
@@ -84,7 +84,7 @@ if ($this_kelas == "Semua"){
     <div style="page-break-after:always;">
         <div id="print">
             <div class="text-center">
-                <hs><strong>LAPORAN CICILAN INSIDENTAL / <?= $this_kelas ?></strong></h5>
+                <hs><strong>LAPORAN CICILAN KESISWAAN / <?= $this_kelas ?></strong></h5>
                 <p><?= $this_date ?></p>
             </div>
 
@@ -109,7 +109,7 @@ if ($this_kelas == "Semua"){
                     $result = $conn->query($sql); 	
                     $i = 1;
                     while($data = $result->fetch_assoc()){ 
-                    $cicilan = explode(",", $data['cicilan_insidental']);
+                    $cicilan = explode(",", $data['cicilan_kesiswaan']);
                     $count = $cicilan >= 7 ? 7 : $cicilan;
                     $k = 0;?>
                     <tr>
@@ -129,7 +129,7 @@ if ($this_kelas == "Semua"){
                         <?php $td = 0; while ($td < 3) {?>
                             <td style='border:none;'></td>
                         <?php $td++; } ?>
-                        <td colspan="7" class="text-center"><strong><?= number_format($sum_insidental[$p]) ?></strong></td>
+                        <td colspan="7" class="text-center"><strong><?= number_format($sum_kesiswaan[$p]) ?></strong></td>
                     </tr>
                 </tbody>
             </table>
