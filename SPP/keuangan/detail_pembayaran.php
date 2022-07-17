@@ -27,6 +27,14 @@ if(isset($_POST['submit'])) {
             
     $result = mysqli_query($conn, "INSERT INTO keuangan(tanggal,nipd,namapd,kelas,insidental,kesiswaan,pendidikan,penerima) VALUES('$tanggal','$nipd','$namapd','$kelas',$insidental,$kesiswaan,$pendidikan,'$penerima')");
     
+    $get_cicilan = mysqli_query($conn, "SELECT arr_cicilan as arr_cicilan FROM insidental WHERE nipd=$nipd_siswa");
+    while($row = mysqli_fetch_array($get_cicilan))
+    {
+        $arr_cicilan = $row['arr_cicilan'];
+        $arr_cicilan = strlen($arr_cicilan) > 0 ? $row['arr_cicilan'].",".(string)$insidental : (string)$insidental;
+        $result = mysqli_query($conn, "UPDATE insidental SET nipd=$nipd,nama='$namapd',kelas='$kelas',arr_cicilan='$arr_cicilan' WHERE nipd=$nipd_siswa");
+    }
+
     $get_data_rekap = mysqli_query($conn, "SELECT * FROM rekap WHERE nis=$nipd_siswa");
     while($row = mysqli_fetch_array($get_data_rekap))
     {

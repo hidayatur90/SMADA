@@ -215,8 +215,8 @@ $terbilang = terbilang($sum_total);
                                         </div>
                                     </div>
                                     <div class="download mt-3 text-end">
-                                        <a class="btn btn-warning" href="print_laporan.php?kelas=<?=$this_kelas?>">Cetak Insidental</a>
-                                        <a class="btn btn-warning" href="print_laporan.php?kelas=<?=$this_kelas?>">Cetak Kesiswaan</a>
+                                        <a class="btn btn-warning" href="print_insidental.php?kelas=<?=$this_kelas?>">Cetak Insidental</a>
+                                        <a class="btn btn-warning" href="print_kesiswaan.php?kelas=<?=$this_kelas?>">Cetak Kesiswaan</a>
                                         <a class="btn btn-success" href="print_laporan.php?kelas=<?=$this_kelas?>">Cetak Laporan</a>
                                     </div>
                                 </div>

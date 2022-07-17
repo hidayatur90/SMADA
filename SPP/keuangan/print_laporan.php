@@ -5,6 +5,9 @@ require_once('../db/db_config.php');
 $this_kelas = $_GET['kelas'];
 $this_date = date('d-M-Y');
 $all_kelas = [];
+$sum_spp = [];
+$sum_insidental = [];
+$sum_kesiswaan = [];
 if ($this_kelas == "Semua"){
     $get_kelas = mysqli_query($conn, "SELECT DISTINCT(kelas) as kelas FROM rekap ORDER BY kelas");
     while($row = mysqli_fetch_array($get_kelas)) {
@@ -12,6 +15,11 @@ if ($this_kelas == "Semua"){
     }
     foreach ($all_kelas as $kelas) {
         $get_sum_nominal = mysqli_query($conn, "SELECT *,SUM(insidental) as sum_insidental, SUM(kesiswaan) as sum_kesiswaan, SUM(pendidikan) as sum_pendidikan FROM rekap WHERE kelas='$kelas' ORDER BY kelas");
+        while($row = mysqli_fetch_array($get_sum_nominal)){
+            $sum_spp[] = $row['sum_pendidikan'];
+            $sum_insidental[] = $row['sum_insidental'];
+            $sum_kesiswaan[] = $row['sum_kesiswaan'];
+        }
     }
 
     $get_sum_all = mysqli_query($conn, "SELECT *,SUM(insidental) as sum_insidental, SUM(kesiswaan) as sum_kesiswaan, SUM(pendidikan) as sum_pendidikan FROM rekap");
@@ -25,14 +33,13 @@ if ($this_kelas == "Semua"){
 } else {
     $all_kelas[] = $this_kelas;
     $get_sum_nominal = mysqli_query($conn, "SELECT *,SUM(insidental) as sum_insidental, SUM(kesiswaan) as sum_kesiswaan, SUM(pendidikan) as sum_pendidikan FROM rekap WHERE kelas='$this_kelas' ORDER BY nama_pd");
+    while($row = mysqli_fetch_array($get_sum_nominal)) {
+        $sum_spp[] = $row['sum_pendidikan'];
+        $sum_insidental[] = $row['sum_insidental'];
+        $sum_kesiswaan[] = $row['sum_kesiswaan'];
+    }
+    $sum_total = $sum_spp[0] + $sum_insidental[0] + $sum_kesiswaan[0];
 }
-while($row = mysqli_fetch_array($get_sum_nominal))
-{
-    $sum_spp = $row['sum_pendidikan'];
-    $sum_insidental = $row['sum_insidental'];
-    $sum_kesiswaan = $row['sum_kesiswaan'];
-}
-$sum_total = $sum_spp + $sum_insidental + $sum_kesiswaan;
 
 ?>
 
@@ -46,7 +53,7 @@ $sum_total = $sum_spp + $sum_insidental + $sum_kesiswaan;
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <!-- Jquery CDN -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-    <title>Cetak Rekapitulasi</title>
+    <title>Cetak Laporan Keuangan</title>
 </head>
 <body>
     <style>
@@ -158,8 +165,8 @@ $sum_total = $sum_spp + $sum_insidental + $sum_kesiswaan;
                             $sum_tot = $tot * 150000;
                         ?>
                         <td colspan="12" class="text-center"><strong><?= number_format($sum_tot) ?></strong></td>
-                        <td class="text-end"><strong><?= number_format($sum_insidental) ?></strong></td>
-                        <td class="text-end"><strong><?= number_format($sum_kesiswaan) ?></strong></td>
+                        <td class="text-end"><strong><?= number_format($sum_insidental[$p]) ?></strong></td>
+                        <td class="text-end"><strong><?= number_format($sum_kesiswaan[$p]) ?></strong></td>
                     </tr>
                 </tbody>
             </table>
@@ -199,15 +206,15 @@ $sum_total = $sum_spp + $sum_insidental + $sum_kesiswaan;
                     <tbody>
                         <tr>
                             <th class="text-start">Dana Pendidikan : </th>
-                            <td class="text-end"><?= "Rp. " . number_format($sum_spp); ?></td>
+                            <td class="text-end"><?= "Rp. " . number_format($sum_spp[$p]); ?></td>
                         </tr>
                         <tr>
                             <th class="text-start">Dana Insidental : </th>
-                            <td class="text-end"><?= "Rp. " . number_format($sum_insidental); ?></td>
+                            <td class="text-end"><?= "Rp. " . number_format($sum_insidental[$p]); ?></td>
                         </tr>
                         <tr>
                             <th class="text-start">Dana Kesiswaan : </th>
-                            <td class="text-end"><?= "Rp. " . number_format($sum_kesiswaan); ?></td>
+                            <td class="text-end"><?= "Rp. " . number_format($sum_kesiswaan[$p]); ?></td>
                         </tr>
                     </tbody>
                     </table>
