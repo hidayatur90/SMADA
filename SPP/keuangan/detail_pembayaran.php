@@ -10,10 +10,10 @@ if(isset($_POST['submit'])) {
     session_start();
     $nama_asli = $_SESSION['nama_asli'];
 
-    $get_data_siswa = mysqli_query($conn, "SELECT * FROM keuangan WHERE nipd=$nipd_siswa GROUP BY namapd");
+    $get_data_siswa = mysqli_query($conn, "SELECT * FROM datapd WHERE nis=$nipd_siswa GROUP BY nama_pd");
     while($row = mysqli_fetch_array($get_data_siswa))
     {
-        $nama = $row['namapd'];
+        $nama = $row['nama_pd'];
         $kelas = $row['kelas'];
     }
     $tanggal = date('Y-m-d');
@@ -145,7 +145,7 @@ if(isset($_POST['submit'])) {
                     </div>
                 </div>
                 <?php } else {
-                    $sql = "SELECT *, SUM(pendidikan) as pendidikan, SUM(insidental) as insidental, SUM(kesiswaan) as kesiswaan FROM keuangan WHERE nipd = $cari GROUP BY namapd";		
+                    $sql = "SELECT *, SUM(pendidikan) as pendidikan, SUM(insidental) as insidental, SUM(kesiswaan) as kesiswaan FROM rekap WHERE nis = $cari GROUP BY nama_pd";		
                     $result = $conn->query($sql);
                     $i = 1;
                     if (mysqli_num_rows($result) > 0){ 
@@ -161,11 +161,11 @@ if(isset($_POST['submit'])) {
                                         <table class="table table-borderless" style="width:80%">
                                             <tr>
                                                 <th>NIPD</th>
-                                                <td>: <?= $data['nipd']; ?></td>
+                                                <td>: <?= $data['nis']; ?></td>
                                             </tr>
                                             <tr>
                                                 <th>Nama Siswa</th>
-                                                <td>: <?= $data['namapd']; ?></td>
+                                                <td>: <?= $data['nama_pd']; ?></td>
                                             </tr>
                                             <tr>
                                                 <th>Kelas </th>
