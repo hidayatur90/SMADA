@@ -110,13 +110,19 @@ if ($this_kelas == "Semua"){
                     $i = 1;
                     while($data = $result->fetch_assoc()){ 
                     $cicilan = explode(",", $data['cicilan_insidental']);
+                    $cicilan_after = [];
+                    for ($i=0; $i < count($cicilan); $i++) { 
+                        if((($i%2) == 0 ) && $i != 0){
+                            $cicilan_after[] = $cicilan[$i];
+                        }
+                    }
                     $count = $cicilan >= 7 ? 7 : $cicilan;
                     $k = 0;?>
                     <tr>
                         <td class="text-start"><?= $data['kelas']; ?></td>
                         <td class="text-start"><?= $data['nipd']; ?></td>
                         <td class="text-start"><?= $data['nama']; ?></td>
-                        <?php foreach ($cicilan as $cicil) { $k++;?>
+                        <?php foreach ($cicilan_after as $cicil) { $k++;?>
                             <td class="text-end"><?= number_format((int)$cicil) ?></td>
                         <?php } ?>
                             <?php $kk = 7 - $k;

@@ -39,16 +39,28 @@ if(isset($_POST['submit'])) {
     $pendidikan_rekap = $pendidikan_2 + $pendidikan;
     $result = mysqli_query($conn, "UPDATE rekap SET insidental=$insidental_rekap,kesiswaan=$kesiswaan_rekap,pendidikan=$pendidikan_rekap WHERE nis=$nipd");
     
-    if(($insidental != 0) || ($kesiswaan != 0)) {
-        $get_cicilan = mysqli_query($conn, "SELECT cicilan_insidental, cicilan_kesiswaan FROM insidental WHERE nipd=$nipd_siswa");
+    $max_id = 0;
+    $get_max_id = mysqli_query($conn, "SELECT MAX(id) as max_id FROM keuangan");
+    while($row = mysqli_fetch_array($get_max_id)){
+        $max_id += $row['max_id'];
+    }
+
+    if(($insidental != 0)) {
+        $get_cicilan = mysqli_query($conn, "SELECT cicilan_insidental FROM insidental WHERE nipd=$nipd_siswa");
         while($row = mysqli_fetch_array($get_cicilan))
         {
             $cicilan_insidental = $row['cicilan_insidental'];
-            $cicilan_insidental = strlen($cicilan_insidental) > 0 ? $row['cicilan_insidental'].",".(string)$insidental : (string)$insidental;
+            $cicilan_insidental = strlen($cicilan_insidental) >= 0 ? $row['cicilan_insidental'].",".(string)$max_id.",".(string)$insidental : (string)$insidental;
             $result = mysqli_query($conn, "UPDATE insidental SET nipd=$nipd,nama='$namapd',kelas='$kelas',cicilan_insidental='$cicilan_insidental' WHERE nipd=$nipd_siswa");
+        }
+    }
 
+    if(($kesiswaan != 0)) {
+        $get_cicilan = mysqli_query($conn, "SELECT cicilan_kesiswaan FROM insidental WHERE nipd=$nipd_siswa");
+        while($row = mysqli_fetch_array($get_cicilan))
+        {
             $cicilan_kesiswaan = $row['cicilan_kesiswaan'];
-            $cicilan_kesiswaan = strlen($cicilan_kesiswaan) > 0 ? $row['cicilan_kesiswaan'].",".(string)$kesiswaan : (string)$kesiswaan;
+            $cicilan_kesiswaan = strlen($cicilan_kesiswaan) >= 0 ? $row['cicilan_kesiswaan'].",".(string)$max_id.",".(string)$kesiswaan : (string)$kesiswaan;
             $result = mysqli_query($conn, "UPDATE insidental SET nipd=$nipd,nama='$namapd',kelas='$kelas',cicilan_kesiswaan='$cicilan_kesiswaan' WHERE nipd=$nipd_siswa");
         }
     }

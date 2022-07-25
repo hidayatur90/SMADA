@@ -35,6 +35,43 @@ $pendidikan_rekap = $pendidikan_2 - $pendidikan;
 $result = mysqli_query($conn, "UPDATE rekap SET insidental=$insidental_rekap,kesiswaan=$kesiswaan_rekap,pendidikan=$pendidikan_rekap WHERE nis=$nis");
 
 $result = mysqli_query($conn, "DELETE FROM keuangan WHERE id=$id");
+
+$get_cicilan = mysqli_query($conn, "SELECT cicilan_insidental FROM insidental WHERE nipd=$nis");
+while($row = mysqli_fetch_array($get_cicilan))
+{
+    $cicilan_insidental = $row['cicilan_insidental'];
+    $cicilan = explode(",", $row['cicilan_insidental']);
+    $i = 0;
+
+    foreach ($cicilan as $cicil) {
+        if($cicil == $id) {
+            unset($cicilan[$i]);
+            unset($cicilan[$i+1]);
+            $cicilan_insidental = implode("," ,$cicilan);
+            $result = mysqli_query($conn, "UPDATE insidental SET nipd=$nis,nama='$namapd',kelas='$kelas',cicilan_insidental='$cicilan_insidental' WHERE nipd=$nis");
+        }
+        $i += 1;
+    }
+}
+
+$get_cicilan = mysqli_query($conn, "SELECT cicilan_kesiswaan FROM insidental WHERE nipd=$nis");
+while($row = mysqli_fetch_array($get_cicilan))
+{
+    $cicilan_kesiswaan = $row['cicilan_kesiswaan'];
+    $cicilan = explode(",", $row['cicilan_kesiswaan']);
+    $i = 0;
+
+    foreach ($cicilan as $cicil) {
+        if($cicil == $id) {
+            unset($cicilan[$i]);
+            unset($cicilan[$i+1]);
+            $cicilan_kesiswaan = implode("," ,$cicilan);
+            $result = mysqli_query($conn, "UPDATE insidental SET nipd=$nis,nama='$namapd',kelas='$kelas',cicilan_kesiswaan='$cicilan_kesiswaan' WHERE nipd=$nis");
+        }
+        $i += 1;
+    }
+}
+
 ?>
 <script>
     alert('Berhasil');
