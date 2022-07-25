@@ -349,6 +349,7 @@ if(isset($_POST['submit'])) {
                     $(month_spp).prop('disabled', true);
                     $(month_spp).prop('value', " ");
                     $(nom_spp).prop('value', " ");
+                    $(nom_spp_2).prop('value', 0);
                 } 
             });
         });
@@ -360,6 +361,7 @@ if(isset($_POST['submit'])) {
                     $(nom_total).prop('value', nom_total.value - nom_insidental.value);
                     $(nom_insidental).prop('disabled', true);
                     $(nom_insidental).prop('value', " ");
+                    $(nom_insidental_2).prop('value', 0);
                 } 
             });
         });
@@ -371,6 +373,7 @@ if(isset($_POST['submit'])) {
                     $(nom_total).prop('value', nom_total.value - nom_kesiswaan.value);
                     $(nom_kesiswaan).prop('disabled', true);
                     $(nom_kesiswaan).prop('value', " ");
+                    $(nom_kesiswaan_2).prop('value', 0);
                 } 
             });
         });
