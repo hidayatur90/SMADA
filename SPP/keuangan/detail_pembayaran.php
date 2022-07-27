@@ -162,6 +162,7 @@ if(isset($_POST['submit'])) {
                     $i = 1;
                     if (mysqli_num_rows($result) > 0){ 
                     while($data = $result->fetch_assoc()){ ?>
+                    <?php $golongan = $data['gol'] ?>
                     <div class="row">
                         <div class="col-6">
                             <div class="card mb-4">
@@ -217,7 +218,7 @@ if(isset($_POST['submit'])) {
                                 <form method="post" action="detail_pembayaran.php?cari=<?= $nipd_siswa ?>">
                                     <!-- Pendidikan -->
                                     <div class="row mb-3">
-                                        <div class="col-6">
+                                        <div class="col-4">
                                             <div class="form-check">
                                                 <input class="form-check-input" type="checkbox" value="" id="pendidikan" name="pendidikan">
                                                 <label class="form-check-label" for="pendidikan">
@@ -229,7 +230,22 @@ if(isset($_POST['submit'])) {
                                             </div>
                                         </div>
                                         <!-- Jumlah -->
-                                        <div class="col-6">
+                                        <div class="col-4">
+                                            <label class="form-check-label" for="jumlah_spp">
+                                                <strong>Pilihan Nominal</strong> 
+                                            </label>
+                                            <select name="nomminal_select" id="nominal_select" class="form-control" disabled>
+                                                <?php if($golongan == '1') { ?>
+                                                    <option value="50000">50000</option>
+                                                <?php } else if($golongan == '2') { ?>
+                                                    <option value="75000">75000</option>
+                                                <?php } else if($golongan == '3') { ?>
+                                                    <option value="150000">150000</option>
+                                                <?php } ?>
+                                            </select>
+                                        </div>
+                                        <!-- Jumlah -->
+                                        <div class="col-4">
                                             <label class="form-check-label" for="jumlah_spp">
                                                 <strong>Jumlah</strong> 
                                             </label>
@@ -304,6 +320,7 @@ if(isset($_POST['submit'])) {
     <script>
         var month_spp = document.getElementById("jumlah_spp");
         var nom_spp = document.getElementById("nominal_pendidikan");
+        var nom_spp_select = document.getElementById("nominal_select");
         var nom_insidental = document.getElementById("nominal_insidental");
         var nom_kesiswaan = document.getElementById("nominal_kesiswaan");
         var nom_total = document.getElementById("nominal_total");
@@ -314,8 +331,8 @@ if(isset($_POST['submit'])) {
         var nom_kesiswaan_2 = document.getElementById('nominal_3');
 
         month_spp.addEventListener("input", function(){
-            nom_spp.value = this.value * 150000;
-            nom_spp_2.value = this.value * 150000;
+            nom_spp.value = this.value * nom_spp_select.value;
+            nom_spp_2.value = this.value * nom_spp_select.value;
             nom_total.value = nom_spp.value;
             if(this.value == 0){
                 btn_submit.setAttribute("disabled", "true");
@@ -356,9 +373,11 @@ if(isset($_POST['submit'])) {
             $('[id="pendidikan"]').change(function() {
                 if ($(this).is(':checked')) {
                     month_spp.removeAttribute("disabled");
+                    nom_spp_select.removeAttribute("disabled");
                 } else {
                     $(nom_total).prop('value', nom_total.value - nom_spp.value);
                     $(month_spp).prop('disabled', true);
+                    $(nom_spp_select).prop('disabled', true);
                     $(month_spp).prop('value', " ");
                     $(nom_spp).prop('value', " ");
                     $(nom_spp_2).prop('value', 0);

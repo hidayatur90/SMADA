@@ -134,7 +134,16 @@ if ($this_kelas == "Semua"){
                     $y = 0;
                     $tot = 0;
                     while($data = $result->fetch_assoc()){ 
-                    $count_pendidikan = $data['pendidikan']/150000;
+                    $golongan = (int)$data['gol'];
+                    $nom_gol = 0;
+                    if($golongan == 1) {
+                        $nom_gol += 50000;
+                    } else if ($golongan == 2) {
+                        $nom_gol += 75000;
+                    } else if ($golongan == 3) {
+                        $nom_gol += 150000;
+                    }
+                    $count_pendidikan = $data['pendidikan']/$nom_gol;
                     // $count = $count_pendidikan;
                     $count = $count_pendidikan >= 12 ? 12 : $count_pendidikan;
                     $tot += $count;
@@ -143,13 +152,19 @@ if ($this_kelas == "Semua"){
                         <td class="text-start"><?= $data['kelas']; ?></td>
                         <td class="text-start"><?= $data['nis']; ?></td>
                         <td class="text-start"><?= $data['nama_pd']; ?></td>
-                        <?php while($j <= $count) { ?>
-                            <td class="text-end"><?= number_format(150000) ?></td>
+                        <?php while($j <= $count) { 
+                            if ($golongan == 3) { ?>
+                                <td class="text-end"><?= number_format(150000) ?></td>
+                            <?php } else if ($golongan == 2) { ?>
+                                <td class="text-end"><?= number_format(75000) ?></td>
+                            <?php } else if ($golongan == 1){ ?>
+                                <td class="text-end"><?= number_format(50000) ?></td>
+                            <?php } ?>
                         <?php $j++; }
                             if(($j > $count) && ($count < 12)){ 
                                 $k = 12 - $count;
                                 while ($k > 0) {?>
-                                    <td class="text-end">0</td>
+                                    <td class="text-end">-</td>
                                 <?php $k--;?>
                             <?php $y += 1; }} ?>
                         <td class="text-end"><?= number_format($data['insidental']); ?></td>
